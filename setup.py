@@ -1,12 +1,14 @@
 import subprocess
 import platform
 import PySimpleGUI as sg
+import constants
 
 # Code to add widgets will go here...
 
 # So what's the logic here?
 
 # Do we force the user to download NPM/NPX? It looks like we have to, dang
+
 
 system_type = platform.system()
 
@@ -15,12 +17,6 @@ which_command = "which"
 
 if system_type is "Windows":
     which_command = "where"
-
-# Constants
-NPM = "npm"
-NPX = "npx"
-TWEEGO = "tweego"
-
 
 def get_bin_path(app_name):
     try:
@@ -44,9 +40,9 @@ def test_existence(app_name):
 
 # 1: Check for NPM/NPX. If not, ask perms to get
 ##Test for npx/npm
-npm_location = get_bin_path(NPM)
-npx_location = get_bin_path(NPX)
-tweego_location = get_bin_path(TWEEGO)  # Still need to test for StoryFormats
+npm_location = get_bin_path(constants.NPM)
+npx_location = get_bin_path(constants.NPX)
+tweego_location = get_bin_path(constants.TWEEGO)  # Still need to test for StoryFormats
 # 2: Check Tweego and Storyformats. If not detected ask perms and download, and set up
 sg.theme("LightBlue2")
 
