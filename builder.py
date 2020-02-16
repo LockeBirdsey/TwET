@@ -114,6 +114,9 @@ class Builder(core.Core):
         the_dir = the_dir.joinpath("src")
         pd_path = Path(project["directory"])
         html_path = Path(project["html"])
+
+        #lets also make a file in root that has: last time this program altered it
+        #yate.
         # shutil.copytree(project_source_directory, the_dir)
         # shutil.copy(project_html, tmp_dir.joinpath("index.html"))
 
