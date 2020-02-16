@@ -41,8 +41,11 @@ class Builder(core.Core):
                 [sg.Text("Name:", size=entry_size), sg.InputText(key="__NAME__", size=text_field_size)],
                 [sg.Text("Email:", size=entry_size), sg.InputText(key="__EMAIL__", size=text_field_size)],
                 [sg.Text("Repository:", size=entry_size), sg.InputText(key="__REPO__", size=text_field_size)],
-                [sg.Text("Keywords (comma separated):", size=entry_size), sg.InputText(key="__KEYWORDS__", size=text_field_size)],
-                [sg.Text("Icon Location:", size=entry_size), sg.InputText(key="__ICON_PATH__", size=text_field_size),sg.FileBrowse()],
+                [sg.Text("Version:", size=entry_size), sg.InputText(key="__VERSION__", size=text_field_size)],
+                [sg.Text("Keywords (comma separated):", size=entry_size),
+                 sg.InputText(key="__KEYWORDS__", size=text_field_size)],
+                [sg.Text("Icon Location:", size=entry_size), sg.InputText(key="__ICON_PATH__", size=text_field_size),
+                 sg.FileBrowse()],
             ], title="Author Details")]
         ]
         layout = [[sg.TabGroup([[sg.Tab("Basic", tab1_layout, tooltip="Basic Settings"),
@@ -76,7 +79,11 @@ class Builder(core.Core):
             if event in (None, 'Build for ' + self.system_type):
                 building = True
                 dialogue_box.update("Building executable for " + self.system_type + "\n", append=True)
-                pod_path = Path(project["output_directory"])
+                pod_path = Path(project[PROJ_OUT_DIR])
+
+                # What if pod_path already contains somestuff
+                # popup to ask if its already a build place
+
                 tmp_dir = pod_path.joinpath(Path("tmp"))
 
                 # Build tmp dir
