@@ -2,7 +2,6 @@ import subprocess
 import platform
 import sys
 from threading import Thread
-
 from constants import *
 
 
@@ -28,9 +27,12 @@ class Core:
 
     # System dependent variables
     which_command = "which"
+    shell = False
 
     if system_type is "Windows":
         which_command = "where"
+        shell = True
+
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
@@ -40,7 +42,7 @@ class Core:
     def get_bin_path(self, app_name):
         try:
             proc = self.test_existence(app_name)
-            location = proc.stdout.split("\n")[0].strip()
+            location = proc.strip()
             print(app_name + " found at " + location)
             return location
         except AssertionError:
@@ -64,6 +66,6 @@ class Core:
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell)
         assert (the_process.stderr is '')
-        return the_process
+        return the_process.stdout

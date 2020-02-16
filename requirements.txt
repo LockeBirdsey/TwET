@@ -1,0 +1,3 @@
+altgraph==0.17
+PyInstaller==3.6
+PySimpleGUI==4.15.2
