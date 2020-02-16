@@ -17,21 +17,37 @@ class Builder(core.Core):
         text_field_size = (int(entry_size[0] * 2.5), entry_size[1])
 
         building = False
+        sg.theme("LightBlue2")
+        tab1_layout = [
+            [sg.Frame(layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION])],
+                              [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION])],
+                              [sg.Text('TweeGo Location:', size=entry_size),
+                               sg.InputText(key="_TWEEGOLOC_", default_text=libs[TWEEGO_LOCATION],
+                                            size=text_field_size),
+                               sg.FileBrowse()]], title="Libraries")],
+            [sg.Frame(layout=[[sg.Text('Project Name:', size=entry_size),
+                               sg.InputText(key="_PROJECTNAME_", default_text="Twinee", size=text_field_size)],
+                              [sg.Text('Project Directory:', size=entry_size),
+                               sg.Input(key="_PROJECTDIR_", size=text_field_size),
+                               sg.FolderBrowse()],
+                              [sg.Text('Project HTML File:', size=entry_size),
+                               sg.InputText(key="_PROJECTHTML_", size=text_field_size), sg.FileBrowse()],
+                              [sg.Text('Project Output Directory:', size=entry_size),
+                               sg.Input(key="_PROJECTOUTPUTDIR_", size=text_field_size),
+                               sg.FolderBrowse()]], title="Project Details")]
+        ]
+        tab2_layout = [
+            [sg.Frame(layout=[
+                [sg.Text("Name:", size=entry_size), sg.InputText(key="__NAME__", size=text_field_size)],
+                [sg.Text("Email:", size=entry_size), sg.InputText(key="__EMAIL__", size=text_field_size)],
+                [sg.Text("Repository:", size=entry_size), sg.InputText(key="__REPO__", size=text_field_size)],
+                [sg.Text("Keywords (comma separated):", size=entry_size), sg.InputText(key="__KEYWORDS__", size=text_field_size)],
+                [sg.Text("Icon Location:", size=entry_size), sg.InputText(key="__ICON_PATH__", size=text_field_size),sg.FileBrowse()],
+            ], title="Author Details")]
+        ]
+        layout = [[sg.TabGroup([[sg.Tab("Basic", tab1_layout, tooltip="Basic Settings"),
+                                 sg.Tab("Advanced", tab2_layout, tooltip="Advanced Settings")]])],
 
-        layout = [[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION])],
-                  [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION])],
-                  [sg.Text('TweeGo Location:', size=entry_size),
-                   sg.InputText(key="_TWEEGOLOC_", default_text=libs[TWEEGO_LOCATION], size=text_field_size),
-                   sg.FileBrowse()],
-                  [sg.Text('Project Name:', size=entry_size),
-                   sg.InputText(key="_PROJECTNAME_", default_text="Twinee", size=text_field_size)],
-                  [sg.Text('Project Directory:', size=entry_size), sg.Input(key="_PROJECTDIR_", size=text_field_size),
-                   sg.FolderBrowse()],
-                  [sg.Text('Project HTML File:', size=entry_size),
-                   sg.InputText(key="_PROJECTHTML_", size=text_field_size), sg.FileBrowse()],
-                  [sg.Text('Project Output Directory:', size=entry_size),
-                   sg.Input(key="_PROJECTOUTPUTDIR_", size=text_field_size),
-                   sg.FolderBrowse()],
                   [sg.Button('Build for ' + self.system_type), sg.Button('Build for Web'), sg.Button('Help'),
                    sg.Button('About')],
                   [sg.Button('Exit')],
@@ -39,7 +55,7 @@ class Builder(core.Core):
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
                                 autoscroll=True, disabled=True)]
                   ]
-        sg.theme("LightBlue2")
+
         window = sg.Window('YATE Builder', layout)
         dialogue_box = window.find_element("dialogue")
 
@@ -52,6 +68,8 @@ class Builder(core.Core):
             project[PROJ_OUT_DIR] = values["_PROJECTOUTPUTDIR_"]
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
                 break
+            if event in (None, 'About'):
+                sg.popup("About this program", )
             if event in (None, 'Build for Web'):
                 # Where the fun begins.
                 print("okay")

@@ -42,7 +42,7 @@ class Core:
     def get_bin_path(self, app_name):
         try:
             proc = self.test_existence(app_name)
-            location = proc.strip()
+            location = proc.split("\n")[0].strip()
             print(app_name + " found at " + location)
             return location
         except AssertionError:
