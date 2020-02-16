@@ -3,12 +3,12 @@
 # Windows templates
 
 
-
 # Linux templates
 # just a single make file with the paths ascertained
 
-#Decide on the call structure though first
+# Decide on the call structure though first
 
-class BuildScriptBuilder():
+class BuildScriptBuilder:
 
 
+    pass
