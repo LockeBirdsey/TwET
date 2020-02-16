@@ -18,6 +18,7 @@ which_command = "which"
 if system_type is "Windows":
     which_command = "where"
 
+
 def get_bin_path(app_name):
     try:
         proc = test_existence(app_name)
