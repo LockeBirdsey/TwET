@@ -4,44 +4,52 @@ from time import sleep
 import PySimpleGUI as sg
 from datetime import datetime
 import core
+from constants import *
 
 
 class Builder(core.Core):
     def main(self):
-        # 1: Check for NPM/NPX. If not, ask perms to get
         self.find_dependencies()
-        project = self.project
-        building = False
         libs = self.libs
         project = self.project
         self.log_queue = Queue()
+        entry_size = self.entry_size
+        text_field_size = (int(entry_size[0] * 2.5), entry_size[1])
 
-        sg.theme("LightBlue2")
-        layout = [[sg.Text('NPM Location:', size=(15, 1)), sg.Text(libs["npm_location"])],
-                  [sg.Text('NPX Location:', size=(15, 1)), sg.Text(libs["npx_location"])],
-                  [sg.Text('TweeGo Location:', size=(15, 1)),
-                   sg.InputText(key="_TWEEGOLOC_", default_text=libs["tweego_location"]), sg.FileBrowse()],
-                  [sg.Text('Project Name:', size=(15, 1)), sg.InputText(key="_PROJECTNAME_", default_text="Twinee")],
-                  [sg.Text('Project Directory:', size=(15, 1)), sg.Input(key="_PROJECTDIR_"), sg.FolderBrowse()],
-                  [sg.Text('Project HTML File:', size=(15, 1)), sg.InputText(key="_PROJECTHTML_"), sg.FileBrowse()],
-                  [sg.Text('Project Output Directory:', size=(15, 1)), sg.Input(key="_PROJECTOUTPUTDIR_"),
+        building = False
+
+        layout = [[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION])],
+                  [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION])],
+                  [sg.Text('TweeGo Location:', size=entry_size),
+                   sg.InputText(key="_TWEEGOLOC_", default_text=libs[TWEEGO_LOCATION], size=text_field_size),
+                   sg.FileBrowse()],
+                  [sg.Text('Project Name:', size=entry_size),
+                   sg.InputText(key="_PROJECTNAME_", default_text="Twinee", size=text_field_size)],
+                  [sg.Text('Project Directory:', size=entry_size), sg.Input(key="_PROJECTDIR_", size=text_field_size),
+                   sg.FolderBrowse()],
+                  [sg.Text('Project HTML File:', size=entry_size),
+                   sg.InputText(key="_PROJECTHTML_", size=text_field_size), sg.FileBrowse()],
+                  [sg.Text('Project Output Directory:', size=entry_size),
+                   sg.Input(key="_PROJECTOUTPUTDIR_", size=text_field_size),
                    sg.FolderBrowse()],
                   [sg.Button('Build for ' + self.system_type), sg.Button('Build for Web'), sg.Button('Help'),
                    sg.Button('About')],
                   [sg.Button('Exit')],
                   [sg.Text("https://www.github.com/LockeBirdsey/yate")],
-                  [sg.Multiline('Hello!\n', size=(75, 8), key="dialogue", autoscroll=True, disabled=True)]
+                  [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
+                                autoscroll=True, disabled=True)]
                   ]
+        sg.theme("LightBlue2")
         window = sg.Window('YATE Builder', layout)
         dialogue_box = window.find_element("dialogue")
 
         while True:
             event, values = window.read(timeout=100)
-            project["name"] = values["_PROJECTNAME_"]
-            project["html"] = values["_PROJECTHTML_"]
-            project["directory"] = values["_PROJECTDIR_"]
-            libs["tweego_location"] = values["_TWEEGOLOC_"]
-            project["output_directory"] = values["_PROJECTOUTPUTDIR_"]
+            libs[TWEEGO_LOCATION] = values["_TWEEGOLOC_"]
+            project[PROJ_NAME] = values["_PROJECTNAME_"]
+            project[PROJ_HTML] = values["_PROJECTHTML_"]
+            project[PROJ_DIR] = values["_PROJECTDIR_"]
+            project[PROJ_OUT_DIR] = values["_PROJECTOUTPUTDIR_"]
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
                 break
             if event in (None, 'Build for Web'):
@@ -76,7 +84,7 @@ class Builder(core.Core):
         uuid = datetime.now().strftime('%Y%m%d%H%M%S')
         the_dir = root.joinpath(project["name"] + "-" + uuid)
         the_dir = the_dir.joinpath(project["name"])
-        self.run_command([libs["npx_location"], "create-electron-app", str(the_dir)])
+        self.run_command_with_output([libs["npx_location"], "create-electron-app", str(the_dir)])
         # need this dir to be created before continuing
         the_dir = the_dir.joinpath("src")
         pd_path = Path(project["directory"])

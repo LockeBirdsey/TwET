@@ -2,7 +2,8 @@ import subprocess
 import platform
 import sys
 from threading import Thread
-import constants
+
+from constants import *
 
 
 class Core:
@@ -10,16 +11,18 @@ class Core:
     log_queue = None
 
     libs = {
-        "npm_location": "",
-        "npx_location": "",
-        "tweego_location": ""}
+        NPM_LOCATION: "",
+        NPX_LOCATION: "",
+        TWEEGO_LOCATION: ""}
 
     project = {
-        "name": "",
-        "directory": "",
-        "html": "",
-        "output_directory": ""
+        PROJ_NAME: "",
+        PROJ_DIR: "",
+        PROJ_HTML: "",
+        PROJ_OUT_DIR: ""
     }
+
+    entry_size = (20, 1)
     # The central YATE class
     system_type = platform.system()
 
@@ -46,7 +49,7 @@ class Core:
             # We have a result, now grab the first line of output
             # Windows note: the first location returned /tends/ to be the binary itself
 
-    def run_command(self, commands):
+    def run_command_with_output(self, commands):
         process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, bufsize=0,
                                    text=None)
         t = Thread(target=self.enqueue_output, args=(process.stdout, self.log_queue))
@@ -55,9 +58,9 @@ class Core:
         return t
 
     def find_dependencies(self):
-        self.libs["npm_location"] = self.get_bin_path(constants.NPM)
-        self.libs["npx_location"] = self.get_bin_path(constants.NPX)
-        self.libs["tweego_location"] = self.get_bin_path(constants.TWEEGO)  # Still need to test for StoryFormats
+        self.libs[NPM_LOCATION] = self.get_bin_path(NPM)
+        self.libs[NPX_LOCATION] = self.get_bin_path(NPX)
+        self.libs[TWEEGO_LOCATION] = self.get_bin_path(TWEEGO)  # Still need to test for StoryFormats
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
