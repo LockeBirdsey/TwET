@@ -12,7 +12,8 @@ class BuildState(Enum):
 NPM = "npm"
 NPX = "npx"
 TWEEGO = "tweego"
-DETAILS_FILE_NAME = "yate.json"
+DETAILS_FILE_NAME = "tweget.json"
+YARN_PACKAGE_FILE = "package.json"
 
 # Keys
 ## Lib keys
@@ -24,7 +25,8 @@ TWEEGO_LOCATION = "tweego_location"
 PROJ_NAME = "name"
 PROJ_DIR = "directory"
 PROJ_HTML = "html"
-PROJ_OUT_DIR = "output_directory"
+PROJ_PARENT_DIR = "output_directory"
+PROJ_BUILD_DIR = "build_directory"
 PROJ_VERSION = "version"
 PROJ_DIMS = "dimensions"
 PROJ_ICON_LOCATION = "icon_location"

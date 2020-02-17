@@ -4,13 +4,19 @@ import platform
 import sys
 import threading
 from datetime import datetime
+from queue import Queue
 from threading import Thread
 from constants import *
 
 
 class Core:
-    ON_POSIX = 'posix' in sys.builtin_module_names
     log_queue = None
+
+    def __init__(self):
+        self.log_queue = Queue()
+
+    ON_POSIX = 'posix' in sys.builtin_module_names
+
     LIB_DICT_NAME = "libs"
     PROJECT_DICT_NAME = "project"
     AUTHOR_DICT_NAME = "author"
@@ -26,7 +32,8 @@ class Core:
         PROJ_NAME: "",
         PROJ_DIR: "",
         PROJ_HTML: "",
-        PROJ_OUT_DIR: "",
+        PROJ_PARENT_DIR: "",
+        PROJ_BUILD_DIR: "",
         PROJ_VERSION: "",
         PROJ_DIMS: "",
         PROJ_ICON_LOCATION: "",
@@ -56,7 +63,7 @@ class Core:
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
-            queue.put(line)
+            queue.put(str(line, encoding="utf-8"))
         out.close()
         self.lock.release()
 
@@ -64,11 +71,9 @@ class Core:
         try:
             proc = self.test_existence(app_name)
             location = proc.split("\n")[0].strip()
-            print(app_name + " found at " + location)
-            return location
+            return app_name, location
         except AssertionError:
-            print(app_name + " was not found")
-            return ""
+            return app_name, ""
             # We have a result, now grab the first line of output
             # Windows note: the first location returned /tends/ to be the binary itself
 
@@ -80,9 +85,25 @@ class Core:
         t.start()
 
     def find_dependencies(self):
-        self.libs[NPM_LOCATION] = self.get_bin_path(NPM)
-        self.libs[NPX_LOCATION] = self.get_bin_path(NPX)
-        self.libs[TWEEGO_LOCATION] = self.get_bin_path(TWEEGO)  # Still need to test for StoryFormats
+        res = self.get_bin_path(NPM)
+        self.libs[NPM_LOCATION] = res[1]
+        self.lib_warning(res)
+
+        res = self.get_bin_path(NPX)
+        self.libs[NPX_LOCATION] = res[1]
+        self.lib_warning(res)
+
+        res = self.get_bin_path(TWEEGO)
+        self.libs[TWEEGO_LOCATION] = res[1]
+        self.lib_warning(res)  # Still need to test for StoryFormats
+
+    def lib_warning(self, app):
+        name = app[0]
+        state = app[1]
+        if state is not "":
+            self.log_queue.put(name + " found at " + state)
+        else:
+            self.log_queue.put(name + " was unable to be located.")
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
@@ -108,3 +129,19 @@ class Core:
             self.libs = data[self.LIB_DICT_NAME]
             self.project = data[self.PROJECT_DICT_NAME]
             self.author = data[self.AUTHOR_DICT_NAME]
+
+    def update_package_json(self, path):
+        # 1 load package json
+        self.log_queue.put("opening package json")
+        data = None
+        with open(path, 'r', encoding="utf-8") as f:
+            data = json.load(f)
+            # keywords = data["keywords"]
+            data["keywords"] = self.project[PROJ_KEYWORDS].split(",")
+            data["author"]["name"] = self.author[AUTHOR_NAME]
+            data["author"]["email"] = self.author[AUTHOR_EMAIL]
+            data["repository"] = self.author[AUTHOR_EMAIL]
+            data["version"] = self.project[PROJ_VERSION]
+            data["config"]["forge"]["packagerConfig"] = {"icon": "icon/path"}
+        with open(path, 'w', encoding="utf-8") as f:
+            json.dump(data, fp=f, indent=4)

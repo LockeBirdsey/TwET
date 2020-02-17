@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-from queue import Queue, Empty
+from queue import Empty
 from time import sleep
 import PySimpleGUI as sg
 import core
@@ -18,8 +18,6 @@ class Builder(core.Core):
         build_state = BuildState.NOTHING
         self.find_dependencies()
         libs = self.libs
-        project = self.project
-        self.log_queue = Queue()
         entry_size = self.entry_size
         text_field_size = (int(entry_size[0] * 2.5), entry_size[1])
 
@@ -40,7 +38,7 @@ class Builder(core.Core):
                               [sg.Text('Project HTML File:', size=entry_size),
                                sg.InputText(key=PROJ_HTML, size=text_field_size), sg.FileBrowse()],
                               [sg.Text('Project Output Directory:', size=entry_size),
-                               sg.Input(key=PROJ_OUT_DIR, size=text_field_size, enable_events=True),
+                               sg.Input(key=PROJ_PARENT_DIR, size=text_field_size, enable_events=True),
                                sg.FolderBrowse()]],
                       title="Project Details")]
         ]
@@ -67,10 +65,10 @@ class Builder(core.Core):
                    sg.Button('Help'), sg.Button('About')],
                   [sg.Button('Exit')],
                   [sg.Text("https://www.github.com/LockeBirdsey/yate")],
-                  [sg.ProgressBar(100, size=(entry_size[0] * 2.55, entry_size[1] * 6), orientation='h',
-                                  key="PROGRESSBAR")],
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
-                                autoscroll=True, disabled=True)]
+                                autoscroll=True, disabled=True)],
+                  [sg.ProgressBar(100, size=(entry_size[0] * 2.8, entry_size[1] * 6), orientation='h',
+                                  key="PROGRESSBAR")]
                   ]
 
         window = sg.Window('Twine Executable Generation Tool', layout)
@@ -78,11 +76,7 @@ class Builder(core.Core):
 
         while True:
             event, values = window.read(timeout=100)
-            libs[TWEEGO_LOCATION] = values[TWEEGO_LOCATION]
-            project[PROJ_NAME] = values[PROJ_NAME]
-            project[PROJ_HTML] = values[PROJ_HTML]
-            project[PROJ_DIR] = values[PROJ_DIR]
-            project[PROJ_OUT_DIR] = values[PROJ_OUT_DIR]
+            self.update_dictionaries(values)
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
                 break
             if event in (None, 'About'):
@@ -93,31 +87,30 @@ class Builder(core.Core):
                 build_state = BuildState.BUILDING_WEB
             if event in (None, 'Setup'):
                 build_state = BuildState.SETUP
-                build_dir = self.build_new()
-            if event in (None, PROJ_OUT_DIR):
-                pod_path = Path(project[PROJ_OUT_DIR])
-                project_dir = pod_path.joinpath(project[PROJ_NAME])
-                potential_lock_path = pod_path.joinpath(DETAILS_FILE_NAME)
+                self.build_new()
+            if event in (None, PROJ_PARENT_DIR):
+                potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
+                print(potential_lock_path)
                 if potential_lock_path.exists():
-                    build_state = BuildState.UPDATING
                     sg.Popup(
                         "A lock file has been detected at " + str(potential_lock_path) + "\nLoading its contents...")
                     self.load_lock_file(potential_lock_path)
                     # update widgets with new values
                     self.update_widgets(window)
                     self.activate_buttons(window)
-
-            if event in (None, 'Build for ' + self.system_type):
+            if event in (None, "BUILDBUTTON"):
                 build_state = BuildState.BUILDING_NEW
                 self.update_dialogue("Building executable for " + self.system_type, append=True)
 
             if build_state is BuildState.SETUP:
                 if not self.lock.locked():
-                    self.build_directories(build_dir)
+                    self.build_directories(Path(self.project[PROJ_BUILD_DIR]))
                     self.activate_buttons(window)
                     build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_NEW:
-                pass
+                self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
+                self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
+                build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_WEB:
                 pass
             elif build_state is BuildState.UPDATING:
@@ -135,10 +128,10 @@ class Builder(core.Core):
                     self.update_progress_bar(window)
                     sleep(0.1)
                 pass
-            else:  # got line
+            else:
                 if line is not "":
-                    print(str(line, encoding="utf-8"))
-                    self.update_dialogue(str(line, encoding="utf-8"), append=True)
+                    self.update_dialogue(line)
+
         window.close()
 
     def init_build_directories(self, root):
@@ -146,7 +139,7 @@ class Builder(core.Core):
 
     def build_directories(self, root):
         # lets make a file in root that has
-        self.update_dialogue("building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
+        self.update_dialogue("Building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
         self.create_lock_file(root)
         src_dir = root.joinpath("src")
         self.copy_files(src_dir)
@@ -165,7 +158,7 @@ class Builder(core.Core):
 
     def build_new(self):
         print("upa")
-        pod_path = Path(self.project[PROJ_OUT_DIR])
+        pod_path = Path(self.project[PROJ_PARENT_DIR])
         project_dir = pod_path.joinpath(self.project[PROJ_NAME])
         self.update_dialogue("Building project into " + str(project_dir))
         if project_dir.is_dir():
@@ -177,7 +170,7 @@ class Builder(core.Core):
         return project_dir
 
     def update_dialogue(self, message, append=True):
-        message = message.rstrip()+"\n"
+        message = message.rstrip() + "\n"
         print(message)  # shadow
         self.dialogue_box.update(message, append=append)
 
@@ -192,6 +185,24 @@ class Builder(core.Core):
             win[str(k)].update(str(v))
         for k, v in self.author.items():
             win[str(k)].update(str(v))
+
+    def update_dictionaries(self, values):
+        for k, v in self.libs.items():
+            try:
+                self.libs[k] = values[str(k)]
+            except:
+                pass
+        for k, v in self.project.items():
+            try:
+                self.project[k] = values[str(k)]
+            except:
+                pass
+        for k, v in self.author.items():
+            try:
+                self.author[k] = values[str(k)]
+            except:
+                pass
+        self.project[PROJ_BUILD_DIR] = str(Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME])))
 
     def update_progress_bar(self, win):
         bar = win["PROGRESSBAR"]
