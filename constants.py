@@ -1,8 +1,19 @@
+from enum import Enum
+
+
+class BuildState(Enum):
+    NOTHING = 1
+    UPDATING = 2
+    BUILDING_NEW = 3
+    BUILDING_WEB = 4
+    SETUP = 5
+
+
 NPM = "npm"
 NPX = "npx"
 TWEEGO = "tweego"
-
 DETAILS_FILE_NAME = "yate.json"
+
 # Keys
 ## Lib keys
 NPM_LOCATION = "npm_location"
