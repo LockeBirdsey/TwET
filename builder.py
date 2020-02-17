@@ -82,7 +82,7 @@ class Builder(core.Core):
                 break
             if event in (None, 'About'):
                 sg.popup("About this program", )
-            if event in (None, 'Build for Web'):
+            if event in (None, "BUILDWEBBUTTON"):
                 # It's basically the same except with some things missing
                 print("okay")
                 build_state = BuildState.BUILDING_WEB
@@ -120,9 +120,11 @@ class Builder(core.Core):
             elif build_state is BuildState.BUILDING_NEW:
                 if not self.lock.locked():
                     build_state = BuildState.NOTHING
-
             elif build_state is BuildState.BUILDING_WEB:
-                pass
+                zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
+                shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath("src")))
+                self.log_queue.put("Zip file located at " + str(zip_path) + ".zip")
+                build_state = BuildState.NOTHING
             elif build_state is BuildState.UPDATING:
                 pass
 
