@@ -77,9 +77,9 @@ class Core:
             # We have a result, now grab the first line of output
             # Windows note: the first location returned /tends/ to be the binary itself
 
-    def run_command_with_output(self, commands):
+    def run_command_with_output(self, commands, cwd=None):
         process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False,
-                                   bufsize=0, text=None)
+                                   bufsize=0, text=None, cwd=cwd)
         t = Thread(target=self.enqueue_output, args=(process.stdout, self.log_queue))
         self.lock.acquire(blocking=False)
         t.start()

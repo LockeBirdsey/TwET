@@ -7,6 +7,7 @@ class BuildState(Enum):
     BUILDING_NEW = 3
     BUILDING_WEB = 4
     SETUP = 5
+    PENDING = 6;
 
 
 NPM = "npm"

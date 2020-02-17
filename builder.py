@@ -102,6 +102,16 @@ class Builder(core.Core):
             if event in (None, "BUILDBUTTON"):
                 build_state = BuildState.BUILDING_NEW
                 self.update_dialogue("Building executable for " + self.system_type, append=True)
+                self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
+                self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
+                # icon setup
+                if self.project[PROJ_ICON_LOCATION] is not "":
+                    icon_path = Path(self.project[PROJ_ICON_LOCATION])
+                    icon_tool = IconTool(icon_path)
+                    icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
+                self.run_command_with_output([self.libs[NPM_LOCATION] + ".cmd", "run", "make"],
+                                             cwd=self.project[PROJ_BUILD_DIR])
+            # The buildstates
             if build_state is BuildState.SETUP:
                 if not self.lock.locked():
                     self.build_directories(Path(self.project[PROJ_BUILD_DIR]))
@@ -109,15 +119,8 @@ class Builder(core.Core):
                     build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_NEW:
                 if not self.lock.locked():
-                    self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
-                    self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
-                    # icon setup
-                    if self.project[PROJ_ICON_LOCATION] is not "":
-                        icon_path = Path(self.project[PROJ_ICON_LOCATION])
-                        icon_tool = IconTool(icon_path)
-                        icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
-                    # self.run_command_with_output([self.libs[NPX_LOCATION] + ".cmd", "electron-forge", "make"])
-                    self.run_command_with_output([self.libs[NPM_LOCATION] + ".cmd", "run", "make"])
+                    build_state = BuildState.NOTHING
+
             elif build_state is BuildState.BUILDING_WEB:
                 pass
             elif build_state is BuildState.UPDATING:
