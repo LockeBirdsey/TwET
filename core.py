@@ -78,7 +78,7 @@ class Core:
             # Windows note: the first location returned /tends/ to be the binary itself
 
     def run_command_with_output(self, commands):
-        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=self.shell,
+        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False,
                                    bufsize=0, text=None)
         t = Thread(target=self.enqueue_output, args=(process.stdout, self.log_queue))
         self.lock.acquire(blocking=False)
@@ -131,8 +131,6 @@ class Core:
             self.author = data[self.AUTHOR_DICT_NAME]
 
     def update_package_json(self, path):
-        # 1 load package json
-        self.log_queue.put("opening package json")
         data = None
         with open(path, 'r', encoding="utf-8") as f:
             data = json.load(f)
@@ -142,6 +140,6 @@ class Core:
             data["author"]["email"] = self.author[AUTHOR_EMAIL]
             data["repository"] = self.author[AUTHOR_EMAIL]
             data["version"] = self.project[PROJ_VERSION]
-            data["config"]["forge"]["packagerConfig"] = {"icon": "icon/path"}
+            data["config"]["forge"]["packagerConfig"] = {"icon": "icon"}
         with open(path, 'w', encoding="utf-8") as f:
             json.dump(data, fp=f, indent=4)

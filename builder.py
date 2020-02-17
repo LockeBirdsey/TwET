@@ -5,6 +5,7 @@ from time import sleep
 import PySimpleGUI as sg
 import core
 from constants import *
+from icon_tool import IconTool
 
 
 class Builder(core.Core):
@@ -101,16 +102,22 @@ class Builder(core.Core):
             if event in (None, "BUILDBUTTON"):
                 build_state = BuildState.BUILDING_NEW
                 self.update_dialogue("Building executable for " + self.system_type, append=True)
-
             if build_state is BuildState.SETUP:
                 if not self.lock.locked():
                     self.build_directories(Path(self.project[PROJ_BUILD_DIR]))
                     self.activate_buttons(window)
                     build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_NEW:
-                self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
-                self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
-                build_state = BuildState.NOTHING
+                if not self.lock.locked():
+                    self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
+                    self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
+                    # icon setup
+                    if self.project[PROJ_ICON_LOCATION] is not "":
+                        icon_path = Path(self.project[PROJ_ICON_LOCATION])
+                        icon_tool = IconTool(icon_path)
+                        icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
+                    # self.run_command_with_output([self.libs[NPX_LOCATION] + ".cmd", "electron-forge", "make"])
+                    self.run_command_with_output([self.libs[NPM_LOCATION] + ".cmd", "run", "make"])
             elif build_state is BuildState.BUILDING_WEB:
                 pass
             elif build_state is BuildState.UPDATING:
@@ -118,9 +125,7 @@ class Builder(core.Core):
 
             try:
                 line = self.log_queue.get_nowait()
-                self.arbitrary_waiting_value = 0
-                self.PROGRESS_BAR_MAX = 100
-                self.update_progress_bar(window)
+                self.reset_progress_bar(window)
             except Empty:
                 if build_state is not BuildState.NOTHING:
                     self.arbitrary_waiting_value += 1
@@ -157,7 +162,6 @@ class Builder(core.Core):
         shutil.copy(html_path, root.joinpath("index.html"))
 
     def build_new(self):
-        print("upa")
         pod_path = Path(self.project[PROJ_PARENT_DIR])
         project_dir = pod_path.joinpath(self.project[PROJ_NAME])
         self.update_dialogue("Building project into " + str(project_dir))
@@ -188,25 +192,25 @@ class Builder(core.Core):
 
     def update_dictionaries(self, values):
         for k, v in self.libs.items():
-            try:
+            if k in values:
                 self.libs[k] = values[str(k)]
-            except:
-                pass
         for k, v in self.project.items():
-            try:
+            if k in values:
                 self.project[k] = values[str(k)]
-            except:
-                pass
         for k, v in self.author.items():
-            try:
+            if k in values:
                 self.author[k] = values[str(k)]
-            except:
-                pass
         self.project[PROJ_BUILD_DIR] = str(Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME])))
 
     def update_progress_bar(self, win):
         bar = win["PROGRESSBAR"]
         bar.UpdateBar(self.arbitrary_waiting_value, self.PROGRESS_BAR_MAX)
+
+    def reset_progress_bar(self, win):
+        bar = win["PROGRESSBAR"]
+        self.arbitrary_waiting_value = 0
+        self.PROGRESS_BAR_MAX = 100
+        bar.UpdateBar(0, self.PROGRESS_BAR_MAX)
 
 
 if __name__ == '__main__':
