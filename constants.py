@@ -16,6 +16,8 @@ TWEEGO = "tweego"
 DETAILS_FILE_NAME = "tweget.json"
 YARN_PACKAGE_FILE = "package.json"
 
+ELECTRON_SOURCE_DIR = "src"
+
 # Keys
 ## Lib keys
 NPM_LOCATION = "npm_location"

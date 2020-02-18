@@ -56,10 +56,13 @@ class Core:
     shell = False
 
     lock = threading.Lock()
+    cmd_extension = ""
+    WINDOWS_CMD_EXT = ".cmd"
 
     if system_type is "Windows":
         which_command = "where"
         shell = True
+        cmd_extension = WINDOWS_CMD_EXT
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):

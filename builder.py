@@ -106,7 +106,7 @@ class Builder(core.Core):
                     icon_path = Path(self.project[PROJ_ICON_LOCATION])
                     icon_tool = IconTool(icon_path)
                     icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
-                self.run_command_with_output([self.libs[NPM_LOCATION] + ".cmd", "run", "make"],
+                self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
                                              cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
             if build_state is BuildState.SETUP:
@@ -119,7 +119,7 @@ class Builder(core.Core):
                     build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_WEB:
                 zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
-                shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath("src")))
+                shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR)))
                 self.log_queue.put("Zip file located at " + str(zip_path) + ".zip")
                 build_state = BuildState.NOTHING
             elif build_state is BuildState.UPDATING:
@@ -142,13 +142,13 @@ class Builder(core.Core):
         window.close()
 
     def init_build_directories(self, root):
-        self.run_command_with_output([self.libs[NPX_LOCATION], "create-electron-app", str(root)])
+        self.run_command_with_output([self.libs[NPX_LOCATION] + self.cmd_extension, "create-electron-app", str(root)])
 
     def build_directories(self, root):
         # lets make a file in root that has
         self.update_dialogue("Building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
         self.create_lock_file(root)
-        src_dir = root.joinpath("src")
+        src_dir = root.joinpath(ELECTRON_SOURCE_DIR)
         self.copy_files(src_dir)
 
     def copy_files(self, root):
