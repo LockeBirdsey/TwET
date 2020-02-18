@@ -65,7 +65,6 @@ class Builder(core.Core):
                    sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON"),
                    sg.Button('Help'), sg.Button('About')],
                   [sg.Button('Exit')],
-                  [sg.Text("https://www.github.com/LockeBirdsey/yate")],
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
                                 autoscroll=True, disabled=True)],
                   [sg.ProgressBar(100, size=(entry_size[0] * 2.8, entry_size[1] * 6), orientation='h',
