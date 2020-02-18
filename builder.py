@@ -83,14 +83,12 @@ class Builder(core.Core):
                 sg.popup("About this program", )
             if event in (None, "BUILDWEBBUTTON"):
                 # It's basically the same except with some things missing
-                print("okay")
                 build_state = BuildState.BUILDING_WEB
             if event in (None, 'Setup'):
                 build_state = BuildState.SETUP
                 self.build_new()
             if event in (None, PROJ_PARENT_DIR):
                 potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
-                print(potential_lock_path)
                 if potential_lock_path.exists():
                     sg.Popup(
                         "A lock file has been detected at " + str(potential_lock_path) + "\nLoading its contents...")

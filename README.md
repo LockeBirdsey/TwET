@@ -1,10 +1,23 @@
 # TwEGeT
-Twine Executable Generator Tool  
+**Tw**ine **E**xecutable **Ge**nerator **T**ool  
 (although it really works with any HTML based project)
+
+Want to distribute your Twine stories as applications?  
+Don't want the hassle dealing with command lines?  
+Want to easily update the application?  
+Want to make sure your app has icons?  
+TwEGeT (may) be for you!
 
 ![Screenshot of main TwEGeT window](./imgs/1.png "screenshot")
 
 ## Using TwEGeT?
+1. Name your story
+2. Locate your story source files (where your images and audio exist)
+3. Locate your story's main HTML file (usually in the Twine2 library)
+4. Select where you want all the magic to happen 
+5. Press "Setup"
+6. Press "Build for X"
+7. Done
 
 ## Why is TwEGeT?
 Deploying Twine stories is usually dead simple (heck, they're HTML files).  
@@ -37,6 +50,7 @@ NPM/NPX
 
 
 ## Future
+- Generate build scripts for CLI usage
 - Build executables for Steam
 - Build executables for mobile (I.e. PhoneGap)
 - Automated media importing and full directory creation
