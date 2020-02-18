@@ -89,15 +89,24 @@ class Core:
 
     def find_dependencies(self):
         res = self.get_bin_path(NPM)
+        if res[1] is "":
+            self.log_queue.put(
+                "NPM cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPM_LOCATION] = res[1]
         self.lib_warning(res)
 
         res = self.get_bin_path(NPX)
+        if res[1] is "":
+            self.log_queue.put(
+                "NPX cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPX_LOCATION] = res[1]
         self.lib_warning(res)
 
         res = self.get_bin_path(TWEEGO)
         self.libs[TWEEGO_LOCATION] = res[1]
+        if res[1] is "":
+            self.log_queue.put(
+                "Tweego cannot be found. Either locate its executable or install from https://www.motoslave.net/tweego/")
         self.lib_warning(res)  # Still need to test for StoryFormats
 
     def lib_warning(self, app):
