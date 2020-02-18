@@ -45,14 +45,15 @@ It is a tool to simply generate distributable standalone executable files for up
 TwEGeT is, in reality, a front-end, built in Python, to control some slightly annoying functionality when wanting to distribute Twine stories as standalone applications. 
 Moreover, it is platform agnostic, which means you can build executables for the three main classes of systems. 
 
-Python 3.6
- - All standard libraries, except:
- - GUI: PySimpleGUI
+**Python 3.6**
+ - All standard libraries, except for:
+   - PySimpleGUI (for the GUI)
+   - Pillow (for the icon creation tool)
  
-NPM/NPX
+**NPM & NPX**
  - Electron Forge
  
- TweeGo
+ **TweeGo**
 
 
 ## Future
