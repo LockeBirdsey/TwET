@@ -10,7 +10,7 @@ TwEGeT (may) be for you!
 
 ![Screenshot of main TwEGeT window](./imgs/1.png "screenshot")
 
-## Using TwEGeT?
+## Using TwEGeT
 1. Name your story
 2. Locate your story source files (where your images and audio exist)
 3. Locate your story's main HTML file (usually in the Twine2 library)
@@ -18,6 +18,12 @@ TwEGeT (may) be for you!
 5. Press "Setup"
 6. Press "Build for X"
 7. Done
+
+## Who is TwEGeT (for)?
+- People who aren't familiar or overly confident with turning Twine stories into executables
+- People who are primarily authors and have little-to-no idea how to deal with the CLI
+- People who are sick of having to get other people to generate executables because they have system X
+- People who are a bit tired of dealing with all the idiosyncrasies of the different tools used (that's me!)
 
 ## Why is TwEGeT?
 Deploying Twine stories is usually dead simple (heck, they're HTML files).  
