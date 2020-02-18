@@ -59,8 +59,9 @@ class Builder(core.Core):
         layout = [[sg.TabGroup([[sg.Tab("Basic", tab1_layout, tooltip="Basic Settings"),
                                  sg.Tab("Advanced", tab2_layout, tooltip="Advanced Settings")]])],
 
-                  [sg.Button('Setup',
-                             tooltip="Sets up the project build directory by installing various Electron packages"),
+                  [sg.Button('Setup New Build Files',
+                             tooltip="Sets up the project build directory by installing various Electron packages",
+                             key="SETUPBUTTON"),
                    sg.Button('Build for ' + self.system_type, disabled=True, key="BUILDBUTTON"),
                    sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON"),
                    sg.Button('Help'), sg.Button('About')],
@@ -78,15 +79,20 @@ class Builder(core.Core):
             event, values = window.read(timeout=100)
             self.update_dictionaries(values)
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
+                # TODO Catch all running threads and terminate
                 break
             if event in (None, 'About'):
-                sg.popup("About this program", )
+                sg.popup("About this program\n"
+                         "Made by Locke Birdsey (@lockebirdsey)\n"
+                         "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title="About TwEGeT")
             if event in (None, "BUILDWEBBUTTON"):
                 # It's basically the same except with some things missing
                 build_state = BuildState.BUILDING_WEB
-            if event in (None, 'Setup'):
+            if event in (None, "SETUPBUTTON"):
                 build_state = BuildState.SETUP
                 self.build_new()
+            if event in (None, "Help"):
+                sg.popup(HELP_STRING, title="Help with TwEGeT")
             if event in (None, PROJ_PARENT_DIR):
                 potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
                 if potential_lock_path.exists():
@@ -106,6 +112,7 @@ class Builder(core.Core):
                     icon_path = Path(self.project[PROJ_ICON_LOCATION])
                     icon_tool = IconTool(icon_path)
                     icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
+                    self.update_dialogue("Creating " + self.system_type + " compatible icons")
                 self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
                                              cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
@@ -114,12 +121,14 @@ class Builder(core.Core):
                     self.build_directories(Path(self.project[PROJ_BUILD_DIR]))
                     self.activate_buttons(window)
                     build_state = BuildState.NOTHING
+                    # TODO Generate build files
             elif build_state is BuildState.BUILDING_NEW:
                 if not self.lock.locked():
                     build_state = BuildState.NOTHING
             elif build_state is BuildState.BUILDING_WEB:
                 zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
                 shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR)))
+                # TODO thread this command so for very large zip files we can update the progress bar
                 self.log_queue.put("Zip file located at " + str(zip_path) + ".zip")
                 build_state = BuildState.NOTHING
             elif build_state is BuildState.UPDATING:

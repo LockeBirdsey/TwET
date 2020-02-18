@@ -40,3 +40,5 @@ PROJ_LAST_UPDATED = "last_updated"
 AUTHOR_NAME = "Name"
 AUTHOR_EMAIL = "Email"
 AUTHOR_REPO = "Repository"
+
+HELP_STRING = "TODO\nFor more support visit: https://github.com/LockeBirdsey/TwEGeT"
