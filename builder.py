@@ -79,7 +79,13 @@ class Builder(core.Core):
             event, values = window.read(timeout=100)
             self.update_dictionaries(values)
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
-                # TODO Catch all running threads and terminate
+                win_keys = window.AllKeysDict
+                for k in win_keys:
+                    try:
+                        window[k].update(disabled=True)
+                    except:
+                        pass
+                self.terminate_processes()
                 break
             if event in (None, 'About'):
                 sg.popup("About this program\n"
@@ -194,23 +200,27 @@ class Builder(core.Core):
 
     def update_widgets(self, win):
         for k, v in self.libs.items():
-            win[str(k)].update(str(v))
+            if k in win.AllKeysDict:
+                win[str(k)].update(str(v))
         for k, v in self.project.items():
-            win[str(k)].update(str(v))
+            if k in win.AllKeysDict:
+                win[str(k)].update(str(v))
         for k, v in self.author.items():
-            win[str(k)].update(str(v))
+            if k in win.AllKeysDict:
+                win[str(k)].update(str(v))
 
     def update_dictionaries(self, values):
-        for k, v in self.libs.items():
-            if k in values:
-                self.libs[k] = values[str(k)]
-        for k, v in self.project.items():
-            if k in values:
-                self.project[k] = values[str(k)]
-        for k, v in self.author.items():
-            if k in values:
-                self.author[k] = values[str(k)]
-        self.project[PROJ_BUILD_DIR] = str(Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME])))
+        if values is not None:
+            for k, v in self.libs.items():
+                if k in values:
+                    self.libs[k] = values[str(k)]
+            for k, v in self.project.items():
+                if k in values:
+                    self.project[k] = values[str(k)]
+            for k, v in self.author.items():
+                if k in values:
+                    self.author[k] = values[str(k)]
+            self.project[PROJ_BUILD_DIR] = str(Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME])))
 
     def update_progress_bar(self, win):
         bar = win["PROGRESSBAR"]

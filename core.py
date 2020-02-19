@@ -7,6 +7,7 @@ import threading
 from datetime import datetime
 from queue import Queue
 from threading import Thread
+
 from constants import *
 
 
@@ -75,6 +76,9 @@ class Core:
     cmd_extension = ""
     WINDOWS_CMD_EXT = ".cmd"
 
+    # I cannot find a nicer way of doing this without installing additional packages
+    processes = []
+
     if system_type is "Windows":
         which_command = "where"
         shell = True
@@ -99,6 +103,7 @@ class Core:
     def run_command_with_output(self, commands, cwd=None):
         process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False,
                                    bufsize=0, text=None, cwd=cwd)
+        self.processes.append(process)
         t = Thread(target=self.enqueue_output, args=(process.stdout, self.log_queue))
         self.lock.acquire(blocking=False)
         t.start()
@@ -171,3 +176,11 @@ class Core:
             data["config"]["forge"]["packagerConfig"] = {"icon": "icon"}
         with open(path, 'w', encoding="utf-8") as f:
             json.dump(data, fp=f, indent=4)
+
+    def terminate_processes(self):
+        # this is ugly but it'll work until I improve it
+        self.logger.info("Ending other tasks")
+        for p in self.processes:
+            if p.returncode is None:
+                p.terminate()
+        self.logger.info("All tasks finished, can safely close now\nHave a nice day :)")
