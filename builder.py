@@ -56,8 +56,8 @@ class Builder(core.Core):
                  sg.FileBrowse()],
             ], title="Author Details")]
         ]
-        layout = [[sg.TabGroup([[sg.Tab("Basic", tab1_layout, tooltip="Basic Settings"),
-                                 sg.Tab("Advanced", tab2_layout, tooltip="Advanced Settings")]])],
+        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
+                                 sg.Tab("Optional", tab2_layout, tooltip="Advanced Settings")]])],
 
                   [sg.Button('Setup New Build Files',
                              tooltip="Sets up the project build directory by installing various Electron packages",
@@ -104,7 +104,7 @@ class Builder(core.Core):
                     self.activate_buttons(window)
             if event in (None, "BUILDBUTTON"):
                 build_state = BuildState.BUILDING_NEW
-                self.update_dialogue("Building executable for " + self.system_type, append=True)
+                self.logger.info("Building executable for " + self.system_type, append=True)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
                 self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
                 # icon setup
@@ -112,7 +112,7 @@ class Builder(core.Core):
                     icon_path = Path(self.project[PROJ_ICON_LOCATION])
                     icon_tool = IconTool(icon_path)
                     icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
-                    self.update_dialogue("Creating " + self.system_type + " compatible icons")
+                    self.logger.info("Creating " + self.system_type + " compatible icons")
                 self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
                                              cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
@@ -129,7 +129,7 @@ class Builder(core.Core):
                 zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
                 shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR)))
                 # TODO thread this command so for very large zip files we can update the progress bar
-                self.log_queue.put("Zip file located at " + str(zip_path) + ".zip")
+                self.logger.info("Zip file located at " + str(zip_path) + ".zip")
                 build_state = BuildState.NOTHING
             elif build_state is BuildState.UPDATING:
                 pass
@@ -145,8 +145,7 @@ class Builder(core.Core):
                     sleep(0.1)
                 pass
             else:
-                if line is not "":
-                    self.update_dialogue(line)
+                self.update_dialogue(self.queue_handler.format(line))
 
         window.close()
 
@@ -155,7 +154,7 @@ class Builder(core.Core):
 
     def build_directories(self, root):
         # lets make a file in root that has
-        self.update_dialogue("Building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
+        self.logger.info("Building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
         self.create_lock_file(root)
         src_dir = root.joinpath(ELECTRON_SOURCE_DIR)
         self.copy_files(src_dir)
@@ -164,18 +163,18 @@ class Builder(core.Core):
         # copy the source files over
         pd_path = Path(self.project[PROJ_DIR])
         html_path = Path(self.project[PROJ_HTML])
-        self.update_dialogue(
+        self.logger.info(
             "Copying the source files over from " + str(pd_path) + " to " + str(root.joinpath(pd_path.name)))
         shutil.copytree(pd_path, root.joinpath(pd_path.name))
         # copy and rename the main html file
-        self.update_dialogue(
+        self.logger.info(
             "Copying the main HTML file over from " + str(html_path) + " to " + str(root.joinpath("index.html")))
         shutil.copy(html_path, root.joinpath("index.html"))
 
     def build_new(self):
         pod_path = Path(self.project[PROJ_PARENT_DIR])
         project_dir = pod_path.joinpath(self.project[PROJ_NAME])
-        self.update_dialogue("Building project into " + str(project_dir))
+        self.logger.info("Building project into " + str(project_dir))
         if project_dir.is_dir():
             # Warn the user that the directory exists and no project was detected
             sg.Popup("A directory already exists here and cannot be used.\nPlease select a different directory")

@@ -1,4 +1,5 @@
 import json
+import logging
 import subprocess
 import platform
 import sys
@@ -9,11 +10,26 @@ from threading import Thread
 from constants import *
 
 
+class QueueHandler(logging.Handler):
+    def __init__(self, log_queue):
+        super().__init__()
+        self.log_queue = log_queue
+
+    def emit(self, record):
+        self.log_queue.put(record)
+
+
 class Core:
     log_queue = None
+    logger = None
+    queue_handler = None
 
     def __init__(self):
+        self.logger = logging.getLogger('TweGeT')
+        logging.basicConfig(level=logging.DEBUG)
         self.log_queue = Queue()
+        self.queue_handler = QueueHandler(self.log_queue)
+        self.logger.addHandler(self.queue_handler)
 
     ON_POSIX = 'posix' in sys.builtin_module_names
 
@@ -66,7 +82,7 @@ class Core:
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
-            queue.put(str(line, encoding="utf-8"))
+            self.logger.info(str(line, encoding="utf-8"))
         out.close()
         self.lock.release()
 
@@ -90,14 +106,14 @@ class Core:
     def find_dependencies(self):
         res = self.get_bin_path(NPM)
         if res[1] is "":
-            self.log_queue.put(
+            self.logger.info(
                 "NPM cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPM_LOCATION] = res[1]
         self.lib_warning(res)
 
         res = self.get_bin_path(NPX)
         if res[1] is "":
-            self.log_queue.put(
+            self.logger.info(
                 "NPX cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPX_LOCATION] = res[1]
         self.lib_warning(res)
@@ -105,7 +121,7 @@ class Core:
         res = self.get_bin_path(TWEEGO)
         self.libs[TWEEGO_LOCATION] = res[1]
         if res[1] is "":
-            self.log_queue.put(
+            self.logger.info(
                 "Tweego cannot be found. Either locate its executable or install from https://www.motoslave.net/tweego/")
         self.lib_warning(res)  # Still need to test for StoryFormats
 
@@ -113,9 +129,9 @@ class Core:
         name = app[0]
         state = app[1]
         if state is not "":
-            self.log_queue.put(name + " found at " + state)
+            self.logger.info(name + " found at " + state)
         else:
-            self.log_queue.put(name + " was unable to be located.")
+            self.logger.info(name + " was unable to be located.")
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,

@@ -8,7 +8,7 @@ Want to easily update the application?
 Want to make sure your app has icons?  
 TwEGeT (may) be for you!
 
-![Screenshot of main TwEGeT window](./imgs/1.png "screenshot")
+<img src="./imgs/1.png" width=75% alt="Screenshot of main TwEGeT window"/>
 
 ## Using TwEGeT
 1. Name your story
