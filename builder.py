@@ -29,8 +29,10 @@ class Builder(core.Core):
         sg.theme("LightBlue2")
         tab1_layout = [
             [sg.Frame(
-                layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION], key=NPM_LOCATION)],
-                        [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION], key=NPX_LOCATION)],
+                layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION], key=NPM_LOCATION),
+                         sg.FileBrowse()],
+                        [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION], key=NPX_LOCATION),
+                         sg.FileBrowse()],
                         [sg.Text('TweeGo Location:', size=entry_size),
                          sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
                                       size=text_field_size), sg.FileBrowse()]],
