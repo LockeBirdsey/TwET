@@ -1,5 +1,9 @@
 # Resizes the icon and places in the icon directory
 # Runs system specific command to make nice icons
+import base64
+from io import BytesIO
+from pathlib import Path
+
 from PIL import Image
 
 import core
@@ -7,9 +11,20 @@ import core
 
 class IconTool(core.Core):
     image_path = None
+    is_in_base64 = False
 
     def __init__(self, image_path):
         self.image_path = image_path
+
+    def convert_to_base64(self):
+        # img_str = base64.b64encode(buff.getvalue())
+
+        img = Image.open(self.image_path)
+        img.thumbnail((256, 256))
+        bio = BytesIO()
+        img.save(bio, format="PNG")
+        del img
+        return bio.getvalue()
 
     def convert(self, output_path, target_system=None):
         src_img = Image.open(self.image_path, 'r')

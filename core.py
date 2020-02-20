@@ -57,7 +57,8 @@ class Core:
         PROJ_PARENT_DIR: "",
         PROJ_BUILD_DIR: "",
         PROJ_VERSION: "1.0.0",
-        PROJ_DIMS: "",
+        PROJ_DIMS_HEIGHT: "600",
+        PROJ_DIMS_WIDTH: "800",
         PROJ_ICON_LOCATION: "",
         PROJ_KEYWORDS: "",
         PROJ_LAST_UPDATED: ""
@@ -190,3 +191,12 @@ class Core:
             if p.returncode is None:
                 p.terminate()
         self.logger.info("All tasks finished, can safely close now\nHave a nice day :)")
+
+    def replace_js_parameters(self, path):
+        js = None
+        with open(INDEX_JS_TEMPLATE_PATH, 'r') as f:
+            js = f.read()
+        js = js.replace(JS_HEIGHT_KEY, self.project[PROJ_DIMS_HEIGHT]).replace(JS_WIDTH_KEY,
+                                                                               self.project[PROJ_DIMS_WIDTH])
+        with open(path, 'w') as f:
+            f.write(js)

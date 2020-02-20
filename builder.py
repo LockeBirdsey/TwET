@@ -23,6 +23,7 @@ class Builder(core.Core):
         self.find_dependencies()
         libs = self.libs
         entry_size = self.entry_size
+        small_entry_size = (int(entry_size[0] / 3), entry_size[1])
         text_field_size = (int(entry_size[0] * 2.5), entry_size[1])
 
         building = False
@@ -50,32 +51,53 @@ class Builder(core.Core):
                               [sg.Text('Project Output Directory:', size=entry_size,
                                        tooltip="Where you want the executable to be stored"),
                                sg.Input(key=PROJ_PARENT_DIR, size=text_field_size, enable_events=True),
-                               sg.FolderBrowse()],
-                              ],
+                               sg.FolderBrowse()]],
                       title="Project Details")]
         ]
         tab2_layout = [
             [sg.Frame(layout=[
                 [sg.Text("Email:", size=entry_size), sg.InputText(key=AUTHOR_EMAIL, size=text_field_size)],
                 [sg.Text("Repository:", size=entry_size), sg.InputText(key=AUTHOR_REPO, size=text_field_size)],
-                [sg.Text("Window Dimensions:", size=entry_size), sg.InputText(key=PROJ_DIMS, size=text_field_size)],
+                [sg.Text("Window Width:", size=entry_size),
+                 sg.InputText(key=PROJ_DIMS_WIDTH, size=small_entry_size, default_text="800"),
+                 sg.Text("Window Height:", size=entry_size),
+                 sg.InputText(key=PROJ_DIMS_HEIGHT, size=small_entry_size, default_text="600")],
                 [sg.Text("Keywords (comma separated):", size=entry_size),
                  sg.InputText(key=PROJ_KEYWORDS, size=text_field_size)],
                 [sg.Text("Icon Location:", size=entry_size), sg.InputText(key=PROJ_ICON_LOCATION, size=text_field_size),
                  sg.FileBrowse()],
             ], title="Author Details")]
         ]
-        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
-                                 sg.Tab("Optional", tab2_layout, tooltip="Advanced Settings")]])],
+        # Icon stuff
+        icon_type = ("Icon files", "*.ico")
+        if self.system_type is "Darwin":
+            icon_type = ("Iconset", "*.icns")
+        tab3_layout = [
+            [sg.Frame(layout=[
+                [sg.Text('Icon Location:', size=entry_size),
+                 sg.InputText("???", key="ICONLOCATIONTEXT", enable_events=True),
+                 sg.FileBrowse()],
+                [sg.Text('Icon Destination:', size=entry_size),
+                 sg.InputText("???", key="ICONDESTINATIONTEXT", enable_events=True),
+                 sg.FileSaveAs(file_types=(icon_type,))],
+                [sg.Image(size=(256, 256), key="ICONIMAGE", data=DUMMY_IMG_BASE64, ), sg.Button("Convert")]]
+                , title="Icon Creator")]]
 
-                  [sg.Button('Setup New Build Files',
+        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
+                                 sg.Tab("Optional", tab2_layout, tooltip="Advanced Settings"),
+                                 sg.Tab("Extra Tools", tab3_layout, tooltip="Extra Tools")]])],
+
+                  [sg.Input(key='EXISTINGPATH', enable_events=True, visible=False),
+                   sg.FileBrowse(button_text="Open Existing Project", enable_events=True, key="OPENEXISTING",
+                                 target="EXISTINGPATH"),
+                   sg.Button('Setup New Build Files',
                              tooltip="Sets up the project build directory by installing various Electron packages",
                              key="SETUPBUTTON"),
                    sg.Button("Update Information", key="UPDATEBUTTON", disabled=True),
                    sg.Button('Build for ' + self.system_type, disabled=True, key="BUILDBUTTON"),
-                   sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON"),
-                   sg.Button('Help'), sg.Button('About')],
-                  [sg.Button('Exit')],
+                   sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")],
+                  [sg.Button('Help'), sg.Button('About'),
+                   sg.Button('Exit')],
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
                                 autoscroll=True, disabled=True)],
                   [sg.ProgressBar(100, size=(entry_size[0] * 2.8, entry_size[1] * 6), orientation='h',
@@ -101,8 +123,16 @@ class Builder(core.Core):
                 sg.popup("About this program\n"
                          "Made by Locke Birdsey (@lockebirdsey)\n"
                          "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title="About TwEGeT")
+            if event in (None, "ICONLOCATIONTEXT"):
+                try:
+                    img_path = Path(values["ICONLOCATIONTEXT"])
+                    icon_tool = IconTool(img_path)
+                    img_as_64 = icon_tool.convert_to_base64()
+                    window["ICONIMAGE"].update(data=img_as_64)
+                except Exception as e:
+                    print(e)
+                    self.logger.debug("Error with loading icon image")
             if event in (None, "BUILDWEBBUTTON"):
-                # It's basically the same except with some things missing
                 build_state = BuildState.BUILDING_WEB
             if event in (None, "SETUPBUTTON"):
                 build_state = BuildState.SETUP
@@ -110,13 +140,25 @@ class Builder(core.Core):
             if event in (None, "UPDATEBUTTON"):
                 self.update_dictionaries(values)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
+                self.replace_js_parameters(
+                    Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR).joinpath(INDEX_JS))
+                self.logger.info("Updating project files located at " + self.project[PROJ_BUILD_DIR])
+            if event in (None, "EXISTINGPATH"):
+                path = values["EXISTINGPATH"]
+                try:
+                    self.load_lock_file(Path(path))
+                    self.update_widgets(window)
+                    self.activate_buttons(window)
+                    sg.Popup("Successfully loaded project: " + self.project[PROJ_NAME])
+                except:
+                    sg.Popup("Existing project file could not be loaded.")
             if event in (None, "Help"):
                 sg.popup(HELP_STRING, title="Help with TwEGeT")
             if event in (None, PROJ_PARENT_DIR):
                 potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
                 if potential_lock_path.exists():
                     sg.Popup(
-                        "A lock file has been detected at " + str(potential_lock_path) + "\nLoading its contents...")
+                        "A config file has been detected at " + str(potential_lock_path) + "\nWill load its contents")
                     self.load_lock_file(potential_lock_path)
                     # update widgets with new values
                     self.update_widgets(window)
@@ -126,6 +168,8 @@ class Builder(core.Core):
                 self.logger.info("Building executable for " + self.system_type)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
                 self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
+                self.replace_js_parameters(
+                    Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR).joinpath(INDEX_JS))
                 # icon setup
                 if self.project[PROJ_ICON_LOCATION] != "":
                     icon_path = Path(self.project[PROJ_ICON_LOCATION])
@@ -205,7 +249,7 @@ class Builder(core.Core):
 
     def update_dialogue(self, message, append=True):
         message = message.rstrip()
-        # print(message)  # shadow
+        print(message + "\n")  # shadow
         ansi_list = self.cut_ansi_string_into_parts(message)
         for ansi_item in ansi_list:
             if ansi_item[1] == 'Reset':
@@ -213,7 +257,6 @@ class Builder(core.Core):
             self.dialogue_box.update(ansi_item[0] + '\n', text_color_for_value=ansi_item[1],
                                      background_color_for_value=ansi_item[2], append=True,
                                      autoscroll=True)
-        # self.dialogue_box.update(message, append=append)
 
     def activate_buttons(self, win):
         win["BUILDBUTTON"].update(disabled=False)
@@ -242,7 +285,9 @@ class Builder(core.Core):
             for k, v in self.author.items():
                 if k in values:
                     self.author[k] = values[str(k)]
-            self.project[PROJ_BUILD_DIR] = str(Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME])))
+            if self.project[PROJ_PARENT_DIR] is not None and self.project[PROJ_NAME] is not None:
+                build_path = Path(self.project[PROJ_PARENT_DIR]).joinpath((self.project[PROJ_NAME]))
+                self.project[PROJ_BUILD_DIR] = str(build_path)
 
     def update_progress_bar(self, win):
         bar = win["PROGRESSBAR"]
