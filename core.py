@@ -1,6 +1,7 @@
 import json
 import logging
 import multiprocessing
+
 multiprocessing.freeze_support()
 import subprocess
 import platform
@@ -55,7 +56,7 @@ class Core:
         PROJ_HTML: "",
         PROJ_PARENT_DIR: "",
         PROJ_BUILD_DIR: "",
-        PROJ_VERSION: "",
+        PROJ_VERSION: "1.0.0",
         PROJ_DIMS: "",
         PROJ_ICON_LOCATION: "",
         PROJ_KEYWORDS: "",
@@ -63,7 +64,7 @@ class Core:
     }
 
     author = {
-        AUTHOR_NAME: "",
+        AUTHOR_NAME: "Your Name",
         AUTHOR_EMAIL: "",
         AUTHOR_REPO: "",
     }
@@ -132,7 +133,8 @@ class Core:
         if res[1] == "":
             self.logger.info(
                 "Tweego cannot be found. Either locate its executable or install from https://www.motoslave.net/tweego/")
-        self.lib_warning(res)  # Still need to test for StoryFormats
+        self.lib_warning(res)
+        # TODO Still need to test for StoryFormats
 
     def lib_warning(self, app):
         name = app[0]
