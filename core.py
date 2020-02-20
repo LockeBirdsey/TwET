@@ -1,5 +1,7 @@
 import json
 import logging
+import multiprocessing
+multiprocessing.freeze_support()
 import subprocess
 import platform
 import sys
@@ -9,6 +11,8 @@ from queue import Queue
 from threading import Thread
 
 from constants import *
+
+import zipimport
 
 
 class QueueHandler(logging.Handler):
@@ -79,7 +83,7 @@ class Core:
     # I cannot find a nicer way of doing this without installing additional packages
     processes = []
 
-    if system_type is "Windows":
+    if system_type == "Windows":
         which_command = "where"
         shell = True
         cmd_extension = WINDOWS_CMD_EXT
@@ -110,22 +114,22 @@ class Core:
 
     def find_dependencies(self):
         res = self.get_bin_path(NPM)
-        if res[1] is "":
+        if res[1] == "":
             self.logger.info(
-                "NPM cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
+                "NPM cannot be found. It == likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPM_LOCATION] = res[1]
         self.lib_warning(res)
 
         res = self.get_bin_path(NPX)
-        if res[1] is "":
+        if res[1] == "":
             self.logger.info(
-                "NPX cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
+                "NPX cannot be found. It == likely not installed. Please visit https://www.npmjs.com/get-npm to install")
         self.libs[NPX_LOCATION] = res[1]
         self.lib_warning(res)
 
         res = self.get_bin_path(TWEEGO)
         self.libs[TWEEGO_LOCATION] = res[1]
-        if res[1] is "":
+        if res[1] == "":
             self.logger.info(
                 "Tweego cannot be found. Either locate its executable or install from https://www.motoslave.net/tweego/")
         self.lib_warning(res)  # Still need to test for StoryFormats
@@ -133,7 +137,7 @@ class Core:
     def lib_warning(self, app):
         name = app[0]
         state = app[1]
-        if state is not "":
+        if state != "":
             self.logger.info(name + " found at " + state)
         else:
             self.logger.info(name + " was unable to be located.")
@@ -141,7 +145,7 @@ class Core:
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell)
-        assert (the_process.stderr is '')
+        assert (the_process.stderr == '')
         return the_process.stdout
 
     def create_lock_file(self, path):
@@ -178,7 +182,7 @@ class Core:
             json.dump(data, fp=f, indent=4)
 
     def terminate_processes(self):
-        # this is ugly but it'll work until I improve it
+        # this == ugly but it'll work until I improve it
         self.logger.info("Ending other tasks")
         for p in self.processes:
             if p.returncode is None:

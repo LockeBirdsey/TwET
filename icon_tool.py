@@ -18,10 +18,10 @@ class IconTool(core.Core):
             for i in target_dims:
                 new_img = src_img.resize(i, i)
                 new_img.save(output_path.joinpath("icon_" + str(i) + "x" + str(i) + ".png"))
-        elif target_system is "Windows":
+        elif target_system == "Windows":
             target_dims = [16, 32, 128, 256, 512]
             src_img.save(output_path.joinpath("icon.ico"), format="ICO")
-        elif target_system is "Darwin":
+        elif target_system == "Darwin":
             target_dims = [16, 32, 64, 128, 256, 512, 1024]
             if src_img.mode == "RGBA":
                 src_img = src_img.convert("RGB")

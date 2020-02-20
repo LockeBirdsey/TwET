@@ -1,3 +1,4 @@
+import multiprocessing
 import shutil
 from pathlib import Path
 from queue import Empty
@@ -114,7 +115,7 @@ class Builder(core.Core):
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
                 self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
                 # icon setup
-                if self.project[PROJ_ICON_LOCATION] is not "":
+                if self.project[PROJ_ICON_LOCATION] != "":
                     icon_path = Path(self.project[PROJ_ICON_LOCATION])
                     icon_tool = IconTool(icon_path)
                     icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
@@ -122,29 +123,29 @@ class Builder(core.Core):
                 self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
                                              cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
-            if build_state is BuildState.SETUP:
+            if build_state == BuildState.SETUP:
                 if not self.lock.locked():
                     self.build_directories(Path(self.project[PROJ_BUILD_DIR]))
                     self.activate_buttons(window)
                     build_state = BuildState.NOTHING
                     # TODO Generate build files
-            elif build_state is BuildState.BUILDING_NEW:
+            elif build_state == BuildState.BUILDING_NEW:
                 if not self.lock.locked():
                     build_state = BuildState.NOTHING
-            elif build_state is BuildState.BUILDING_WEB:
+            elif build_state == BuildState.BUILDING_WEB:
                 zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
                 shutil.make_archive(zip_path, 'zip', (Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR)))
                 # TODO thread this command so for very large zip files we can update the progress bar
                 self.logger.info("Zip file located at " + str(zip_path) + ".zip")
                 build_state = BuildState.NOTHING
-            elif build_state is BuildState.UPDATING:
+            elif build_state == BuildState.UPDATING:
                 pass
 
             try:
                 line = self.log_queue.get_nowait()
                 self.reset_progress_bar(window)
             except Empty:
-                if build_state is not BuildState.NOTHING:
+                if build_state != BuildState.NOTHING:
                     self.arbitrary_waiting_value += 1
                     self.PROGRESS_BAR_MAX += 1
                     self.update_progress_bar(window)
@@ -210,7 +211,7 @@ class Builder(core.Core):
                 win[str(k)].update(str(v))
 
     def update_dictionaries(self, values):
-        if values is not None:
+        if values != None:
             for k, v in self.libs.items():
                 if k in values:
                     self.libs[k] = values[str(k)]
