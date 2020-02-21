@@ -29,15 +29,7 @@ class Builder(core.Core):
         building = False
         sg.theme("LightBlue2")
         tab1_layout = [
-            [sg.Frame(
-                layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION], key=NPM_LOCATION),
-                         sg.FileBrowse()],
-                        [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION], key=NPX_LOCATION),
-                         sg.FileBrowse()],
-                        [sg.Text('TweeGo Location:', size=entry_size),
-                         sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
-                                      size=text_field_size), sg.FileBrowse()]],
-                title="Libraries")],
+
             [sg.Frame(layout=[[sg.Text('Project Name:', size=entry_size),
                                sg.InputText(key=PROJ_NAME, default_text="Twinee", size=text_field_size)],
                               [sg.Text("Author Name:", size=entry_size),
@@ -52,9 +44,7 @@ class Builder(core.Core):
                                        tooltip="Where you want the executable to be stored"),
                                sg.Input(key=PROJ_PARENT_DIR, size=text_field_size, enable_events=True),
                                sg.FolderBrowse()]],
-                      title="Project Details")]
-        ]
-        tab2_layout = [
+                      title="Project Details")],
             [sg.Frame(layout=[
                 [sg.Text("Email:", size=entry_size), sg.InputText(key=AUTHOR_EMAIL, size=text_field_size)],
                 [sg.Text("Repository:", size=entry_size), sg.InputText(key=AUTHOR_REPO, size=text_field_size)],
@@ -66,7 +56,23 @@ class Builder(core.Core):
                  sg.InputText(key=PROJ_KEYWORDS, size=text_field_size)],
                 [sg.Text("Icon Location:", size=entry_size), sg.InputText(key=PROJ_ICON_LOCATION, size=text_field_size),
                  sg.FileBrowse()],
-            ], title="Author Details")]
+            ], title="Author Details")
+            ], [sg.Input(key='EXISTINGPATH', enable_events=True, visible=False),
+                sg.FileBrowse(button_text="Open Existing Project", enable_events=True, key="OPENEXISTING",
+                              target="EXISTINGPATH"),
+                sg.Button('Setup New Build Files',
+                          tooltip="Sets up the project build directory by installing various Electron packages",
+                          key="SETUPBUTTON"),
+                sg.Button("Update Information", key="UPDATEBUTTON", disabled=True),
+                sg.Button('Build for ' + self.system_type, disabled=True, key="BUILDBUTTON"),
+                sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")]]
+        tab2_layout = [
+            [sg.Frame(layout=[
+
+
+
+
+            ], title="Project Organiser")]
         ]
         # Icon stuff
         icon_type = ("Icon files", "*.ico")
@@ -85,19 +91,23 @@ class Builder(core.Core):
                     size=(256, 256)), sg.Button("Convert")]
             ], title="Icon Creator")]]
 
-        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
-                                 sg.Tab("Optional", tab2_layout, tooltip="Advanced Settings"),
-                                 sg.Tab("IconCreator", tab3_layout, tooltip="IconCreator")]])],
+        tab4_layout = [
+            [sg.Frame(
+                layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION], key=NPM_LOCATION),
+                         sg.FileBrowse()],
+                        [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION], key=NPX_LOCATION),
+                         sg.FileBrowse()],
+                        [sg.Text('TweeGo Location:', size=entry_size),
+                         sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
+                                      size=text_field_size), sg.FileBrowse()]],
+                title="Libraries")]]
 
-                  [sg.Input(key='EXISTINGPATH', enable_events=True, visible=False),
-                   sg.FileBrowse(button_text="Open Existing Project", enable_events=True, key="OPENEXISTING",
-                                 target="EXISTINGPATH"),
-                   sg.Button('Setup New Build Files',
-                             tooltip="Sets up the project build directory by installing various Electron packages",
-                             key="SETUPBUTTON"),
-                   sg.Button("Update Information", key="UPDATEBUTTON", disabled=True),
-                   sg.Button('Build for ' + self.system_type, disabled=True, key="BUILDBUTTON"),
-                   sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")],
+        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
+                                 sg.Tab("Project Organiser", tab2_layout, tooltip="Project Organiser"),
+                                 sg.Tab("IconCreator", tab3_layout, tooltip="IconCreator"),
+                                 sg.Tab("Library Info", tab4_layout, tooltip="Library Info")
+                                 ]])],
+
                   [sg.Button('Help'), sg.Button('About'),
                    sg.Button('Exit')],
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
@@ -131,7 +141,7 @@ class Builder(core.Core):
                     if img_path.exists():
                         icon_tool = IconTool(img_path)
                         img_as_64 = icon_tool.convert_to_base64()
-                        window["ICONIMAGE"].update(data=img_as_64, size=(256,256))
+                        window["ICONIMAGE"].update(data=img_as_64, size=(256, 256))
                 except Exception as e:
                     print(e)
                     self.logger.debug("Error with loading icon image")
