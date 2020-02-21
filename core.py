@@ -114,6 +114,16 @@ class Core:
         self.lock.acquire(blocking=False)
         t.start()
 
+    # Warning: Blocking
+    def run_command_store_output(self, commands, cwd=None):
+        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False,
+                                   bufsize=0, text=None, cwd=cwd)
+        output = ""
+        for line in iter(process.stdout.readline, b''):
+            output += str(line, encoding="utf-8")
+        process.stdout.close()
+        return output
+
     def find_dependencies(self):
         res = self.get_bin_path(NPM)
         if res[1] == "":

@@ -75,17 +75,19 @@ class Builder(core.Core):
         tab3_layout = [
             [sg.Frame(layout=[
                 [sg.Text('Icon Location:', size=entry_size),
-                 sg.InputText("???", key="ICONLOCATIONTEXT", enable_events=True),
+                 sg.InputText("", key="ICONLOCATIONTEXT", enable_events=True),
                  sg.FileBrowse()],
                 [sg.Text('Icon Destination:', size=entry_size),
-                 sg.InputText("???", key="ICONDESTINATIONTEXT", enable_events=True),
+                 sg.InputText("", key="ICONDESTINATIONTEXT", enable_events=True),
                  sg.FileSaveAs(file_types=(icon_type,))],
-                [sg.Image(size=(256, 256), key="ICONIMAGE", data=DUMMY_IMG_BASE64, ), sg.Button("Convert")]]
-                , title="Icon Creator")]]
+                [sg.Frame(layout=[
+                    [sg.Image(size=(256, 256), key="ICONIMAGE", data=DUMMY_IMG_BASE64, )]], title="Image Preview",
+                    size=(256, 256)), sg.Button("Convert")]
+            ], title="Icon Creator")]]
 
         layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
                                  sg.Tab("Optional", tab2_layout, tooltip="Advanced Settings"),
-                                 sg.Tab("Extra Tools", tab3_layout, tooltip="Extra Tools")]])],
+                                 sg.Tab("IconCreator", tab3_layout, tooltip="IconCreator")]])],
 
                   [sg.Input(key='EXISTINGPATH', enable_events=True, visible=False),
                    sg.FileBrowse(button_text="Open Existing Project", enable_events=True, key="OPENEXISTING",
@@ -126,9 +128,10 @@ class Builder(core.Core):
             if event in (None, "ICONLOCATIONTEXT"):
                 try:
                     img_path = Path(values["ICONLOCATIONTEXT"])
-                    icon_tool = IconTool(img_path)
-                    img_as_64 = icon_tool.convert_to_base64()
-                    window["ICONIMAGE"].update(data=img_as_64)
+                    if img_path.exists():
+                        icon_tool = IconTool(img_path)
+                        img_as_64 = icon_tool.convert_to_base64()
+                        window["ICONIMAGE"].update(data=img_as_64, size=(256,256))
                 except Exception as e:
                     print(e)
                     self.logger.debug("Error with loading icon image")
