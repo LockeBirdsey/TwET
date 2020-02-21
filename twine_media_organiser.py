@@ -34,7 +34,6 @@ class TMO(core.Core):
         self.relative_root = Path(self.html_file_path).parent
         self.html_name = Path(self.html_file_path).stem
         self.tweego_path = self.libs[TWEEGO_LOCATION]
-        self.tweego_path = str(Path("C:\\Users\\lollb\\bin\\tweego.exe"))  # REMOVE AFTER TESTING
         self.output_dir = Path(output_dir)
         self.img_dir = self.output_dir.joinpath(IMG)
         self.audio_dir = self.output_dir.joinpath(AUDIO)
@@ -71,15 +70,15 @@ class TMO(core.Core):
                 self.video_files[s] = s
 
     def announce_media_finds(self):
-        print("Audio found:")
+        self.logger.info("Audio found:")
         for k in self.audio_files:
-            print(k)
-        print("Images found:")
+            self.logger.info(k)
+        self.logger.info("Images found:")
         for k in self.image_files:
-            print(k)
-        print("Video found:")
+            self.logger.info(k)
+        self.logger.info("Video found:")
         for k in self.video_files:
-            print(k)
+            self.logger.info(k)
 
     def build_new_dir_structure(self):
         if not self.output_dir.exists():
@@ -123,7 +122,7 @@ class TMO(core.Core):
                 shutil.copy(f_src, f_dest)
                 self.video_files[k] = str(f_dest)
         except PermissionError as e:
-            print(
+            self.logger.info(
                 "A permissions error has occurred, likely due to overwrite attempt. (" + e.strerror + " with " + e.filename+")")
 
     # This can be done above

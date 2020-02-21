@@ -9,6 +9,8 @@ from constants import *
 from icon_tool import IconTool
 import re
 
+from twine_media_organiser import TMO
+
 
 class Builder(core.Core):
     build_state = BuildState.NOTHING
@@ -29,7 +31,6 @@ class Builder(core.Core):
         building = False
         sg.theme("LightBlue2")
         tab1_layout = [
-
             [sg.Frame(layout=[[sg.Text('Project Name:', size=entry_size),
                                sg.InputText(key=PROJ_NAME, default_text="Twinee", size=text_field_size)],
                               [sg.Text("Author Name:", size=entry_size),
@@ -68,10 +69,11 @@ class Builder(core.Core):
                 sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")]]
         tab2_layout = [
             [sg.Frame(layout=[
-
-
-
-
+                [sg.Text('Twine HTML File:', size=entry_size),
+                 sg.InputText(key="TWINEHTML", size=text_field_size), sg.FileBrowse()],
+                [sg.Text('Output Directory:', size=entry_size),
+                 sg.InputText(key="ORGANISEDDIR", size=text_field_size), sg.FolderBrowse()],
+                [sg.Button("Organise", key="ORGANISE", enable_events=True)]
             ], title="Project Organiser")]
         ]
         # Icon stuff
@@ -102,7 +104,7 @@ class Builder(core.Core):
                                       size=text_field_size), sg.FileBrowse()]],
                 title="Libraries")]]
 
-        layout = [[sg.TabGroup([[sg.Tab("Essential", tab1_layout, tooltip="Basic Settings"),
+        layout = [[sg.TabGroup([[sg.Tab("Executable Generator", tab1_layout, tooltip="Executable Generator"),
                                  sg.Tab("Project Organiser", tab2_layout, tooltip="Project Organiser"),
                                  sg.Tab("IconCreator", tab3_layout, tooltip="IconCreator"),
                                  sg.Tab("Library Info", tab4_layout, tooltip="Library Info")
@@ -150,6 +152,11 @@ class Builder(core.Core):
             if event in (None, "SETUPBUTTON"):
                 build_state = BuildState.SETUP
                 self.build_new()
+            if event in (None, "ORGANISE"):
+                html_path = values["TWINEHTML"]
+                out_dir = values["ORGANISEDDIR"]
+                t = TMO(html_path, out_dir)
+                t.run()
             if event in (None, "UPDATEBUTTON"):
                 self.update_dictionaries(values)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
