@@ -2,6 +2,7 @@ import json
 import logging
 import multiprocessing
 
+# To make pyinstaller behave
 multiprocessing.freeze_support()
 import subprocess
 import platform
@@ -15,7 +16,12 @@ from constants import *
 
 import zipimport
 
-
+##
+# Sorry for anyone who looks at this.
+# I need to get around to refactoring
+# and this is nowhere near as bad as builder.py...
+# lb
+##
 class QueueHandler(logging.Handler):
     def __init__(self, log_queue):
         super().__init__()

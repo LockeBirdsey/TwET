@@ -29,7 +29,6 @@ class Builder(core.Core):
         small_entry_size = (int(entry_size[0] / 3), entry_size[1])
         text_field_size = (int(entry_size[0] * 2.5), entry_size[1])
 
-        building = False
         sg.theme("LightBlue2")
         tab1_layout = [
             [sg.Frame(layout=[[sg.Text('Project Name:', size=entry_size),

@@ -123,7 +123,7 @@ class TMO(core.Core):
                 self.video_files[k] = str(f_dest)
         except PermissionError as e:
             self.logger.info(
-                "A permissions error has occurred, likely due to overwrite attempt. (" + e.strerror + " with " + e.filename+")")
+                "A permissions error has occurred, likely due to overwrite attempt. (" + e.strerror + " with " + e.filename + ")")
 
     # This can be done above
     # But it will happen afterwards in case of failure
