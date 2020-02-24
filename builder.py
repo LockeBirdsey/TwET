@@ -1,4 +1,5 @@
 import multiprocessing
+import os
 import shutil
 from pathlib import Path
 from queue import Empty
@@ -66,7 +67,8 @@ class Builder(core.Core):
                           key="SETUPBUTTON"),
                 sg.Button("Update Information", key="UPDATEBUTTON", disabled=True),
                 sg.Button('Build for ' + self.system_type, disabled=True, key="BUILDBUTTON"),
-                sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")]]
+                sg.Button('Build for Web', disabled=True, key="BUILDWEBBUTTON")]
+        ]
         tab2_layout = [
             [sg.Frame(layout=[
                 [sg.Text('Twine HTML File:', size=entry_size),
@@ -110,7 +112,7 @@ class Builder(core.Core):
                                  sg.Tab("Library Info", tab4_layout, tooltip="Library Info")
                                  ]])],
 
-                  [sg.Button('Help'), sg.Button('About'),
+                  [sg.Button('Open Twine2 Directory (Local)', key="Twine2Local"), sg.Button('Help'), sg.Button('About'),
                    sg.Button('Exit')],
                   [sg.Multiline('Hello!\n', size=(entry_size[0] * 4, entry_size[1] * 8), key="dialogue",
                                 autoscroll=True, disabled=True)],
@@ -155,8 +157,25 @@ class Builder(core.Core):
             if event in (None, "ORGANISE"):
                 html_path = values["TWINEHTML"]
                 out_dir = values["ORGANISEDDIR"]
-                t = TMO(html_path, out_dir)
-                t.run()
+                if html_path is "" or out_dir is "":
+                    self.logger.info("Project Organiser: Incomplete paths were provided")
+                else:
+                    t = TMO(html_path, out_dir)
+                    t.run()
+            if event in (None, "Twine2Local"):
+                # System specific open commands
+                # Twine2 files lives in ~/Documents/Twine
+                home = Path.home()
+                try:
+                    if self.system_type is "Windows":
+                        os.startfile(home.joinpath("Documents").joinpath("Twine"))
+                    else:
+                        opener = "open" if self.system_type == "darwin" else "xdg-open"
+                        twine_path = home.joinpath("Documents").joinpath("Twine")
+                        self.run_command_store_output(opener, [str(twine_path)])
+                except Exception as e:
+                    self.logger.debug(
+                        "An error occurred. If needed, submit the following error message to the TwET Github. " + str(e))
             if event in (None, "UPDATEBUTTON"):
                 self.update_dictionaries(values)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
