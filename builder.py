@@ -88,6 +88,8 @@ class Builder(core.Core):
             icon_type = ("Iconset", "*.icns")
         tab3_layout = [
             [sg.Frame(layout=[
+                [sg.Text("This tool can be used to create icons (for anything). Select the image you wish to use,\n"
+                         "and generate ICO (Windows icon format) and ICNS (macOS icon format) using those respective systems")],
                 [sg.Text('Icon Location:', size=entry_size),
                  sg.InputText("", key="ICONLOCATIONTEXT", enable_events=True),
                  sg.FileBrowse()],
@@ -101,7 +103,10 @@ class Builder(core.Core):
 
         tab4_layout = [
             [sg.Frame(
-                layout=[[sg.Text('NPM Location:', size=entry_size),
+                layout=[
+                    [sg.Text("NPM and NPX are required to use the executable generator.\n"
+                             "TweeGo is required to use the Project Organiser")],
+                    [sg.Text('NPM Location:', size=entry_size),
                          sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size),
                          sg.FileBrowse(enable_events=True, key="NPM_FIND")],
                         [sg.Text('NPX Location:', size=entry_size),
@@ -220,7 +225,8 @@ class Builder(core.Core):
             if event in (None, "BUILDBUTTON"):
                 if self.libs[NPX_LOCATION] is "" or self.libs[NPM_LOCATION]:
                     self.logger.info(
-                        "Either NPM or NPX are unable to be found which means the project cannot be built.")
+                        "Either NPM or NPX are unable to be found which means the project cannot be built.\n"
+                        "Please locate them using the \"Library Info\" Tab")
                 else:
                     build_state = BuildState.BUILDING_NEW
                     self.logger.info("Building executable for " + self.system_type)
