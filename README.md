@@ -7,9 +7,9 @@ TwET is a GUI tool to help with certain aspects of managing and releasing Twine 
 What's included?
 - TwEGet: The Twine Executable Generator Tool. Easily generate an Electron based executable to be able to distribute Twine stories for Windows, macOS and Linux
 - Icon Creator: Make icons compatible with Windows and macOS. Can be used indepently
-- Twine Media Organiser: Aggregates all media used in a Twine story to a standard directory structure.
+- Twine Project Organiser: Aggregates all media used in a Twine story to a standard directory structure.
 
-
+**macOS releases have several issues due to me not being able to use the last macOS**   
 **As a rule of thumb, always back up your work**
 
 # TwEGeT
