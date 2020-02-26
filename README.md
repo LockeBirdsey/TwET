@@ -10,6 +10,7 @@ What's included?
 - Twine Media Organiser: Aggregates all media used in a Twine story to a standard directory structure.
 
 
+**As a rule of thumb, always back up your work**
 
 # TwEGeT
 (although it really works with any HTML based project)
