@@ -3,6 +3,8 @@ import logging
 import multiprocessing
 
 # To make pyinstaller behave
+from settings_manager import SettingsManager
+
 multiprocessing.freeze_support()
 import subprocess
 import platform
@@ -15,6 +17,7 @@ from threading import Thread
 from constants import *
 
 import zipimport
+
 
 ##
 # Sorry for anyone who looks at this.
@@ -35,6 +38,7 @@ class Core:
     log_queue = None
     logger = None
     queue_handler = None
+    settings_manager = None
 
     def __init__(self):
         self.logger = logging.getLogger('TweGeT')
@@ -42,6 +46,7 @@ class Core:
         self.log_queue = Queue()
         self.queue_handler = QueueHandler(self.log_queue)
         self.logger.addHandler(self.queue_handler)
+        self.settings_manager = SettingsManager()
 
     ON_POSIX = 'posix' in sys.builtin_module_names
 
@@ -106,9 +111,9 @@ class Core:
         try:
             proc = self.test_existence(app_name)
             location = proc.split("\n")[0].strip()
-            return app_name, location
+            return location
         except AssertionError:
-            return app_name, ""
+            return None
             # We have a result, now grab the first line of output
             # Windows note: the first location returned /tends/ to be the binary itself
 
@@ -131,35 +136,25 @@ class Core:
         return output
 
     def find_dependencies(self):
-        res = self.get_bin_path(NPM)
-        if res[1] == "":
+        res = self.get_bin_path(NPM) if not None else self.settings_manager.find_setting(NPM)
+        if res == "":
             self.logger.info(
-                "NPM cannot be found. It == likely not installed. Please visit https://www.npmjs.com/get-npm to install")
-        self.libs[NPM_LOCATION] = res[1]
-        self.lib_warning(res)
+                "NPM cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
+        self.libs[NPM_LOCATION] = res
 
-        res = self.get_bin_path(NPX)
-        if res[1] == "":
+        res = self.get_bin_path(NPX) if not None else self.settings_manager.find_setting(NPX)
+        if res == "":
             self.logger.info(
-                "NPX cannot be found. It == likely not installed. Please visit https://www.npmjs.com/get-npm to install")
-        self.libs[NPX_LOCATION] = res[1]
-        self.lib_warning(res)
+                "NPX cannot be found. It is likely not installed. Please visit https://www.npmjs.com/get-npm to install")
+        self.libs[NPX_LOCATION] = res
 
-        res = self.get_bin_path(TWEEGO)
-        self.libs[TWEEGO_LOCATION] = res[1]
-        if res[1] == "":
+        res = self.get_bin_path(TWEEGO) if not None else self.settings_manager.find_setting(TWEEGO)
+        if res == "":
             self.logger.info(
                 "Tweego cannot be found. Either locate its executable or install from https://www.motoslave.net/tweego/")
-        self.lib_warning(res)
-        # TODO Still need to test for StoryFormats
+        self.libs[TWEEGO_LOCATION] = res
 
-    def lib_warning(self, app):
-        name = app[0]
-        state = app[1]
-        if state != "":
-            self.logger.info(name + " found at " + state)
-        else:
-            self.logger.info(name + " was unable to be located.")
+        # TODO Still need to test for StoryFormats
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
@@ -216,3 +211,16 @@ class Core:
                                                                                self.project[PROJ_DIMS_WIDTH])
         with open(path, 'w') as f:
             f.write(js)
+
+    def write_settings(self):
+        self.settings_manager.write_out_settings(self.libs)
+
+    def read_settings(self):
+        m, x, t = self.settings_manager.read_in_settings()
+
+        if self.libs[NPM_LOCATION] == "":
+            self.libs[NPM_LOCATION] = m
+        if self.libs[NPX_LOCATION] == "":
+            self.libs[NPX_LOCATION] = x
+        if self.libs[TWEEGO_LOCATION] == "":
+            self.libs[TWEEGO_LOCATION] = t

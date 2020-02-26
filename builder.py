@@ -24,6 +24,7 @@ class Builder(core.Core):
     def main(self):
         build_state = BuildState.NOTHING
         self.find_dependencies()
+        self.read_settings()
         libs = self.libs
         entry_size = self.entry_size
         small_entry_size = (int(entry_size[0] / 3), entry_size[1])
@@ -70,6 +71,10 @@ class Builder(core.Core):
         ]
         tab2_layout = [
             [sg.Frame(layout=[
+                [sg.Text(
+                    "The Project Organiser parses a Twine Story HTML file for various media (images, audio, video),\n"
+                    "copies them and your HTML file to the selected output directory in a neat structure and attempts\n"
+                    "to replace the links in your Story with the new ones, so that the Story will behave correctly.")],
                 [sg.Text('Twine HTML File:', size=entry_size),
                  sg.InputText(key="TWINEHTML", size=text_field_size), sg.FileBrowse()],
                 [sg.Text('Output Directory:', size=entry_size),
@@ -96,13 +101,16 @@ class Builder(core.Core):
 
         tab4_layout = [
             [sg.Frame(
-                layout=[[sg.Text('NPM Location:', size=entry_size), sg.Text(libs[NPM_LOCATION], key=NPM_LOCATION),
-                         sg.FileBrowse()],
-                        [sg.Text('NPX Location:', size=entry_size), sg.Text(libs[NPX_LOCATION], key=NPX_LOCATION),
-                         sg.FileBrowse()],
+                layout=[[sg.Text('NPM Location:', size=entry_size),
+                         sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size),
+                         sg.FileBrowse(enable_events=True, key="NPM_FIND")],
+                        [sg.Text('NPX Location:', size=entry_size),
+                         sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size),
+                         sg.FileBrowse(enable_events=True, key="NPX_FIND")],
                         [sg.Text('TweeGo Location:', size=entry_size),
                          sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
-                                      size=text_field_size), sg.FileBrowse()]],
+                                      size=text_field_size, enable_events=True),
+                         sg.FileBrowse(enable_events=True, key="TWEEGO_FIND")]],
                 title="Libraries")]]
 
         layout = [[sg.TabGroup([[sg.Tab("Executable Generator", tab1_layout, tooltip="Executable Generator"),
@@ -125,6 +133,7 @@ class Builder(core.Core):
         while True:
             event, values = window.read(timeout=100)
             self.update_dictionaries(values)
+
             if event in (None, 'Exit'):  # if user closes window or clicks cancel
                 win_keys = window.AllKeysDict
                 for k in win_keys:
@@ -134,6 +143,12 @@ class Builder(core.Core):
                         pass
                 self.terminate_processes()
                 break
+            if event in (None, NPM_LOCATION):
+                self.write_settings()
+            if event in (None, NPX_LOCATION):
+                self.write_settings()
+            if event in (None, TWEEGO_LOCATION):
+                self.write_settings()
             if event in (None, 'About'):
                 sg.popup("About this program\n"
                          "Made by Locke Birdsey (@lockebirdsey)\n"
@@ -174,7 +189,8 @@ class Builder(core.Core):
                         self.run_command_store_output([opener, str(twine_path)])
                 except Exception as e:
                     self.logger.debug(
-                        "An error occurred. If needed, submit the following error message to the TwET Github. " + str(e))
+                        "An error occurred. If needed, submit the following error message to the TwET Github. " + str(
+                            e))
             if event in (None, "UPDATEBUTTON"):
                 self.update_dictionaries(values)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
@@ -202,20 +218,24 @@ class Builder(core.Core):
                     self.update_widgets(window)
                     self.activate_buttons(window)
             if event in (None, "BUILDBUTTON"):
-                build_state = BuildState.BUILDING_NEW
-                self.logger.info("Building executable for " + self.system_type)
-                self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
-                self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
-                self.replace_js_parameters(
-                    Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR).joinpath(INDEX_JS))
-                # icon setup
-                if self.project[PROJ_ICON_LOCATION] != "":
-                    icon_path = Path(self.project[PROJ_ICON_LOCATION])
-                    icon_tool = IconTool(icon_path)
-                    icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
-                    self.logger.info("Creating " + self.system_type + " compatible icons")
-                self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
-                                             cwd=self.project[PROJ_BUILD_DIR])
+                if self.libs[NPX_LOCATION] is "" or self.libs[NPM_LOCATION]:
+                    self.logger.info(
+                        "Either NPM or NPX are unable to be found which means the project cannot be built.")
+                else:
+                    build_state = BuildState.BUILDING_NEW
+                    self.logger.info("Building executable for " + self.system_type)
+                    self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
+                    self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
+                    self.replace_js_parameters(
+                        Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR).joinpath(INDEX_JS))
+                    # icon setup
+                    if self.project[PROJ_ICON_LOCATION] != "":
+                        icon_path = Path(self.project[PROJ_ICON_LOCATION])
+                        icon_tool = IconTool(icon_path)
+                        icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
+                        self.logger.info("Creating " + self.system_type + " compatible icons")
+                    self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
+                                                 cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
             if build_state == BuildState.SETUP:
                 if not self.lock.locked():
