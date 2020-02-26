@@ -3,6 +3,8 @@ import logging
 import multiprocessing
 
 # To make pyinstaller behave
+from pathlib import Path
+
 from settings_manager import SettingsManager
 
 multiprocessing.freeze_support()
@@ -41,8 +43,19 @@ class Core:
     settings_manager = None
 
     def __init__(self):
+        # Set up all the logging
         self.logger = logging.getLogger('TweGeT')
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG,
+                            format=u'%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setLevel(logging.CRITICAL)
+        formatter = logging.Formatter(u'%(asctime)s - %(levelname)s - %(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
+        fhandler = logging.FileHandler("twet.log", 'w', 'utf-8')
+        fhandler.setFormatter(formatter)
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+        self.logger.addHandler(fhandler)
         self.log_queue = Queue()
         self.queue_handler = QueueHandler(self.log_queue)
         self.logger.addHandler(self.queue_handler)
@@ -103,7 +116,12 @@ class Core:
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
-            self.logger.info(str(line, encoding="utf-8"))
+            string = str(line, encoding="utf-8")
+            try:
+                self.logger.info(string)
+            except:
+                string = line
+                self.logger.info(string)
         out.close()
         self.lock.release()
 
@@ -118,7 +136,8 @@ class Core:
             # Windows note: the first location returned /tends/ to be the binary itself
 
     def run_command_with_output(self, commands, cwd=None):
-        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False,
+        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE,
+                                   shell=False,
                                    bufsize=0, text=None, cwd=cwd)
         self.processes.append(process)
         t = Thread(target=self.enqueue_output, args=(process.stdout, self.log_queue))
@@ -158,7 +177,8 @@ class Core:
 
     def test_existence(self, app_name):
         the_process = subprocess.run([self.which_command, app_name], universal_newlines=True,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell)
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+                                     shell=self.shell)
         assert (the_process.stderr == '')
         return the_process.stdout
 
@@ -201,11 +221,11 @@ class Core:
         for p in self.processes:
             if p.returncode is None:
                 p.terminate()
-        self.logger.info("All tasks finished, can safely close now\nHave a nice day :)")
+        self.logger.info("All tasks finished, can safely close now.")
 
     def replace_js_parameters(self, path):
         js = None
-        with open(INDEX_JS_TEMPLATE_PATH, 'r') as f:
+        with open(self.resource_path(INDEX_JS_TEMPLATE_PATH), 'r') as f:
             js = f.read()
         js = js.replace(JS_HEIGHT_KEY, self.project[PROJ_DIMS_HEIGHT]).replace(JS_WIDTH_KEY,
                                                                                self.project[PROJ_DIMS_WIDTH])
@@ -226,3 +246,11 @@ class Core:
             self.libs[NPX_LOCATION] = x
         if self.libs[TWEEGO_LOCATION] == "":
             self.libs[TWEEGO_LOCATION] = t
+
+    def resource_path(self, relative_path):
+        try:
+            base_path = Path(sys._MEIPASS)
+        except Exception:
+            base_path = Path(".")
+
+        return base_path.joinpath(Path(relative_path))

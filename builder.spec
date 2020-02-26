@@ -2,11 +2,14 @@
 
 block_cipher = None
 
+added_files = [
+( './templates', './templates')
 
+]
 a = Analysis(['builder.py'],
              pathex=['C:\\Users\\lollb\\repos\\yate'],
              binaries=[],
-             datas=[],
+             datas=added_files,         
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -23,7 +26,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [('v', None, 'OPTION')],
-          name='builder',
+          name='TwET',
           debug=True,
           bootloader_ignore_signals=False,
           strip=False,

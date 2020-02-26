@@ -109,10 +109,10 @@ class Builder(core.Core):
                     [sg.Text("NPM and NPX are required to use the executable generator.\n"
                              "TweeGo is required to use the Project Organiser")],
                     [sg.Text('NPM Location:', size=entry_size),
-                     sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size),
+                     sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="NPM_FIND")],
                     [sg.Text('NPX Location:', size=entry_size),
-                     sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size),
+                     sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="NPX_FIND")],
                     [sg.Text('TweeGo Location:', size=entry_size),
                      sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
@@ -148,8 +148,8 @@ class Builder(core.Core):
                         window[k].update(disabled=True)
                     except:
                         pass
-                self.terminate_processes()
                 self.write_settings()
+                self.terminate_processes()
                 break
             if event in (None, NPM_LOCATION):
                 self.write_settings()
@@ -331,9 +331,6 @@ class Builder(core.Core):
         win["UPDATEBUTTON"].update(disabled=False)
 
     def update_widgets(self, win):
-        for k, v in self.libs.items():
-            if k in win.AllKeysDict:
-                win[str(k)].update(str(v))
         for k, v in self.project.items():
             if k in win.AllKeysDict:
                 win[str(k)].update(str(v))
@@ -342,7 +339,7 @@ class Builder(core.Core):
                 win[str(k)].update(str(v))
 
     def update_dictionaries(self, values):
-        if values != None:
+        if values is not None:
             for k, v in self.libs.items():
                 if k in values:
                     self.libs[k] = values[str(k)]
