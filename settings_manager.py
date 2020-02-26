@@ -1,4 +1,3 @@
-from pathlib import Path
 from configparser import ConfigParser
 
 from constants import *
@@ -40,11 +39,12 @@ class SettingsManager:
     # Read in settings
     def read_in_settings(self):
         config = self.config
-        npx_loc = config.get(self.libs_key, NPX)
-        npm_loc = config.get(self.libs_key, NPM)
-        tweego_loc = config.get(self.libs_key, TWEEGO)
-
-        return npm_loc, npx_loc, tweego_loc
+        if config.has_section(self.libs_key):
+            npx_loc = config.get(self.libs_key, NPX)
+            npm_loc = config.get(self.libs_key, NPM)
+            tweego_loc = config.get(self.libs_key, TWEEGO)
+            return npm_loc, npx_loc, tweego_loc
+        return None, None, None
 
     def find_setting(self, key):
         config = self.config

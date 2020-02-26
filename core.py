@@ -217,6 +217,8 @@ class Core:
 
     def read_settings(self):
         m, x, t = self.settings_manager.read_in_settings()
+        if m is None and x is None and t is None:
+            return
 
         if self.libs[NPM_LOCATION] == "":
             self.libs[NPM_LOCATION] = m

@@ -56,7 +56,9 @@ class Builder(core.Core):
                  sg.InputText(key=PROJ_DIMS_HEIGHT, size=small_entry_size, default_text="600")],
                 [sg.Text("Keywords (comma separated):", size=entry_size),
                  sg.InputText(key=PROJ_KEYWORDS, size=text_field_size)],
-                [sg.Text("Icon Location:", size=entry_size), sg.InputText(key=PROJ_ICON_LOCATION, size=text_field_size),
+                [sg.Text("Icon Location:", size=entry_size,
+                         tooltip="Automatically create an icon and assign it to the executable"),
+                 sg.InputText(key=PROJ_ICON_LOCATION, size=text_field_size),
                  sg.FileBrowse()],
             ], title="Author Details")
             ], [sg.Input(key='EXISTINGPATH', enable_events=True, visible=False),
@@ -107,15 +109,15 @@ class Builder(core.Core):
                     [sg.Text("NPM and NPX are required to use the executable generator.\n"
                              "TweeGo is required to use the Project Organiser")],
                     [sg.Text('NPM Location:', size=entry_size),
-                         sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size),
-                         sg.FileBrowse(enable_events=True, key="NPM_FIND")],
-                        [sg.Text('NPX Location:', size=entry_size),
-                         sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size),
-                         sg.FileBrowse(enable_events=True, key="NPX_FIND")],
-                        [sg.Text('TweeGo Location:', size=entry_size),
-                         sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
-                                      size=text_field_size, enable_events=True),
-                         sg.FileBrowse(enable_events=True, key="TWEEGO_FIND")]],
+                     sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size),
+                     sg.FileBrowse(enable_events=True, key="NPM_FIND")],
+                    [sg.Text('NPX Location:', size=entry_size),
+                     sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size),
+                     sg.FileBrowse(enable_events=True, key="NPX_FIND")],
+                    [sg.Text('TweeGo Location:', size=entry_size),
+                     sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
+                                  size=text_field_size, enable_events=True),
+                     sg.FileBrowse(enable_events=True, key="TWEEGO_FIND")]],
                 title="Libraries")]]
 
         layout = [[sg.TabGroup([[sg.Tab("Executable Generator", tab1_layout, tooltip="Executable Generator"),
@@ -147,6 +149,7 @@ class Builder(core.Core):
                     except:
                         pass
                 self.terminate_processes()
+                self.write_settings()
                 break
             if event in (None, NPM_LOCATION):
                 self.write_settings()
@@ -223,7 +226,7 @@ class Builder(core.Core):
                     self.update_widgets(window)
                     self.activate_buttons(window)
             if event in (None, "BUILDBUTTON"):
-                if self.libs[NPX_LOCATION] is "" or self.libs[NPM_LOCATION]:
+                if self.libs[NPX_LOCATION] is "" or self.libs[NPM_LOCATION] is "'":
                     self.logger.info(
                         "Either NPM or NPX are unable to be found which means the project cannot be built.\n"
                         "Please locate them using the \"Library Info\" Tab")
