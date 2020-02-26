@@ -90,7 +90,7 @@ class Builder(core.Core):
                  sg.InputText("", key="ICONDESTINATIONTEXT", enable_events=True),
                  sg.FileSaveAs(file_types=(icon_type,))],
                 [sg.Frame(layout=[
-                    [sg.Image(size=(256, 256), key="ICONIMAGE", data=DUMMY_IMG_BASE64, )]], title="Image Preview",
+                    [sg.Image(size=(256, 256), key="ICONIMAGE", filename='', )]], title="Image Preview",
                     size=(256, 256)), sg.Button("Convert")]
             ], title="Icon Creator")]]
 
@@ -169,9 +169,9 @@ class Builder(core.Core):
                     if self.system_type is "Windows":
                         os.startfile(home.joinpath("Documents").joinpath("Twine"))
                     else:
-                        opener = "open" if self.system_type == "darwin" else "xdg-open"
+                        opener = "open" if self.system_type == "Darwin" else "xdg-open"
                         twine_path = home.joinpath("Documents").joinpath("Twine")
-                        self.run_command_store_output(opener, [str(twine_path)])
+                        self.run_command_store_output([opener, str(twine_path)])
                 except Exception as e:
                     self.logger.debug(
                         "An error occurred. If needed, submit the following error message to the TwET Github. " + str(e))
