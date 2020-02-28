@@ -1,0 +1,294 @@
+# Translations template for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-02-28 15:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: builder.py:27
+msgid "Locating dependencies..."
+msgstr ""
+
+#: builder.py:29
+msgid "Locating and importing exising settings..."
+msgstr ""
+
+#: builder.py:38
+msgid "Project Name"
+msgstr ""
+
+#: builder.py:40
+msgid "Author Name"
+msgstr ""
+
+#: builder.py:41
+msgid "Your Name"
+msgstr ""
+
+#: builder.py:42
+msgid "Version"
+msgstr ""
+
+#: builder.py:44
+msgid "Project Directory"
+msgstr ""
+
+#: builder.py:46
+msgid "Project HTML File"
+msgstr ""
+
+#: builder.py:48
+msgid "Project Output Directory"
+msgstr ""
+
+#: builder.py:49
+msgid "Where you want the executable to be stored"
+msgstr ""
+
+#: builder.py:52
+msgid "Project Details"
+msgstr ""
+
+#: builder.py:54
+msgid "Email"
+msgstr ""
+
+#: builder.py:55
+msgid "Repository"
+msgstr ""
+
+#: builder.py:56
+msgid "Window Width"
+msgstr ""
+
+#: builder.py:58
+msgid "Window Height"
+msgstr ""
+
+#: builder.py:62 builder.py:98
+msgid "Icon Location"
+msgstr ""
+
+#: builder.py:63
+msgid "Automatically create an icon and assign it to the executable"
+msgstr ""
+
+#: builder.py:66
+msgid "Author Details"
+msgstr ""
+
+#: builder.py:68
+msgid "Open Existing Project"
+msgstr ""
+
+#: builder.py:70
+msgid "Setup New Build Files"
+msgstr ""
+
+#: builder.py:71
+msgid ""
+"Sets up the project build directory by installing various Electron "
+"packages"
+msgstr ""
+
+#: builder.py:73
+msgid "Update Information"
+msgstr ""
+
+#: builder.py:74
+msgid "Build for "
+msgstr ""
+
+#: builder.py:75
+msgid "Build for Web"
+msgstr ""
+
+#: builder.py:80
+msgid ""
+"The Project Organiser parses a Twine Story HTML file for various media "
+"(images, audio, video),copies them and your HTML file to the selected "
+"output directory in a neat structure and attempts to replace the links in"
+" your Story with the new ones, so that the Story will behave correctly."
+msgstr ""
+
+#: builder.py:84
+msgid "Twine HTML File"
+msgstr ""
+
+#: builder.py:86
+msgid "Output Directory"
+msgstr ""
+
+#: builder.py:88
+msgid "Organise"
+msgstr ""
+
+#: builder.py:89 builder.py:127
+msgid "Project Organiser"
+msgstr ""
+
+#: builder.py:95
+msgid ""
+"This tool can be used to create icons (for anything). Select the image "
+"you wish to use,\n"
+"and generate ICO (Windows icon format) and ICNS (macOS icon format) using"
+" those respective systems"
+msgstr ""
+
+#: builder.py:101
+msgid "Icon Destination"
+msgstr ""
+
+#: builder.py:105
+msgid "Image Preview"
+msgstr ""
+
+#: builder.py:106
+msgid "Convert"
+msgstr ""
+
+#: builder.py:107
+msgid "Icon Creator"
+msgstr ""
+
+#: builder.py:112
+msgid ""
+"NPM and NPX are required to use the executable generator.\n"
+"TweeGo is required to use the Project Organiser"
+msgstr ""
+
+#: builder.py:114
+msgid "NPM Location"
+msgstr ""
+
+#: builder.py:117
+msgid "NPX Location"
+msgstr ""
+
+#: builder.py:120
+msgid "TweeGo Location"
+msgstr ""
+
+#: builder.py:124
+msgid "Libraries"
+msgstr ""
+
+#: builder.py:126
+msgid "Executable Generator"
+msgstr ""
+
+#: builder.py:128
+msgid "IconCreator"
+msgstr ""
+
+#: builder.py:129
+msgid "Library Info"
+msgstr ""
+
+#: builder.py:132
+msgid "Open Twine2 Directory (Local)"
+msgstr ""
+
+#: builder.py:132
+msgid "Help"
+msgstr ""
+
+#: builder.py:133
+msgid "About"
+msgstr ""
+
+#: builder.py:134
+msgid "Exit"
+msgstr ""
+
+#: builder.py:141
+msgid "Twine Executable Generation Tool"
+msgstr ""
+
+#: builder.py:167
+msgid "About TwEGeT"
+msgstr ""
+
+#: builder.py:177
+msgid "Error with loading icon image"
+msgstr ""
+
+#: builder.py:204
+msgid ""
+"An error occurred. If needed, submit the following error message to the "
+"TwET Github."
+msgstr ""
+
+#: builder.py:211
+msgid "Updating project files located at "
+msgstr ""
+
+#: builder.py:220
+msgid "Existing project file could not be loaded."
+msgstr ""
+
+#: builder.py:222
+msgid "Help with TwEGeT"
+msgstr ""
+
+#: builder.py:227
+msgid ""
+"A config file has been detected at \n"
+"Will load its contents"
+msgstr ""
+
+#: builder.py:235
+msgid ""
+"Either NPM or NPX are unable to be found which means the project cannot "
+"be built.\n"
+"Please locate them using the \"Library Info\" Tab"
+msgstr ""
+
+#: builder.py:239
+msgid "Building executable for "
+msgstr ""
+
+#: builder.py:249
+msgid "Creating "
+msgstr ""
+
+#: builder.py:249
+msgid " compatible icons"
+msgstr ""
+
+#: builder.py:266
+msgid "Zip file located at .zip"
+msgstr ""
+
+#: builder.py:292
+msgid "Building lock file at "
+msgstr ""
+
+#: builder.py:302
+msgid "Copying the source files over from "
+msgstr ""
+
+#: builder.py:302 builder.py:306
+msgid " to "
+msgstr ""
+
+#: builder.py:306
+msgid "Copying the main HTML file over from "
+msgstr ""
+
+#: builder.py:312
+msgid "Building project into "
+msgstr ""
+

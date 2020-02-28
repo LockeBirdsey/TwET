@@ -24,9 +24,9 @@ class Builder(core.Core):
 
     def main(self):
         build_state = BuildState.NOTHING
-        self.logger.info("Locating dependencies...")
+        self.logger.info(_("Locating dependencies..."))
         self.find_dependencies()
-        self.logger.info("Locating and importing exising settings...")
+        self.logger.info(_("Locating and importing exising settings..."))
         self.read_settings()
         libs = self.libs
         entry_size = self.entry_size
@@ -35,110 +35,110 @@ class Builder(core.Core):
 
         sg.theme(GUI_THEME)
         tab1_layout = [
-            [sg.Frame(layout=[[sg.Text("Project Name", size=entry_size),
+            [sg.Frame(layout=[[sg.Text(_("Project Name"), size=entry_size),
                                sg.InputText(key=PROJ_NAME, default_text=EMPTY_STRING, size=text_field_size)],
-                              [sg.Text("Author Name", size=entry_size),
-                               sg.InputText(key=AUTHOR_NAME, size=text_field_size, default_text="Your Name")],
-                              [sg.Text("Version", size=entry_size),
+                              [sg.Text(_("Author Name"), size=entry_size),
+                               sg.InputText(key=AUTHOR_NAME, size=text_field_size, default_text=_("Your Name"))],
+                              [sg.Text(_("Version"), size=entry_size),
                                sg.InputText(key=PROJ_VERSION, size=text_field_size, default_text="1.0.0")],
-                              [sg.Text("Project Directory", size=entry_size),
+                              [sg.Text(_("Project Directory"), size=entry_size),
                                sg.Input(key=PROJ_DIR, size=text_field_size), sg.FolderBrowse()],
-                              [sg.Text("Project HTML File", size=entry_size),
+                              [sg.Text(_("Project HTML File"), size=entry_size),
                                sg.InputText(key=PROJ_HTML, size=text_field_size), sg.FileBrowse()],
-                              [sg.Text("Project Output Directory", size=entry_size,
-                                       tooltip="Where you want the executable to be stored"),
+                              [sg.Text(_("Project Output Directory"), size=entry_size,
+                                       tooltip=_("Where you want the executable to be stored")),
                                sg.Input(key=PROJ_PARENT_DIR, size=text_field_size, enable_events=True),
                                sg.FolderBrowse()]],
-                      title="Project Details")],
+                      title=_("Project Details"))],
             [sg.Frame(layout=[
-                [sg.Text("Email", size=entry_size), sg.InputText(key=AUTHOR_EMAIL, size=text_field_size)],
-                [sg.Text("Repository", size=entry_size), sg.InputText(key=AUTHOR_REPO, size=text_field_size)],
-                [sg.Text("Window Width", size=entry_size),
+                [sg.Text(_("Email"), size=entry_size), sg.InputText(key=AUTHOR_EMAIL, size=text_field_size)],
+                [sg.Text(_("Repository"), size=entry_size), sg.InputText(key=AUTHOR_REPO, size=text_field_size)],
+                [sg.Text(_("Window Width"), size=entry_size),
                  sg.InputText(key=PROJ_DIMS_WIDTH, size=small_entry_size, default_text="800"),
-                 sg.Text("Window Height", size=entry_size),
+                 sg.Text(_("Window Height"), size=entry_size),
                  sg.InputText(key=PROJ_DIMS_HEIGHT, size=small_entry_size, default_text="600")],
                 [sg.Text("Keywords (comma separated)", size=entry_size),
                  sg.InputText(key=PROJ_KEYWORDS, size=text_field_size)],
-                [sg.Text("Icon Location", size=entry_size,
-                         tooltip="Automatically create an icon and assign it to the executable"),
+                [sg.Text(_("Icon Location"), size=entry_size,
+                         tooltip=_("Automatically create an icon and assign it to the executable")),
                  sg.InputText(key=PROJ_ICON_LOCATION, size=text_field_size),
                  sg.FileBrowse()],
-            ], title="Author Details")
+            ], title=_("Author Details"))
             ], [sg.Input(key=EXISTINGPATH, enable_events=True, visible=False),
-                sg.FileBrowse(button_text="Open Existing Project", enable_events=True, key=OPENEXISTING,
+                sg.FileBrowse(button_text=_("Open Existing Project"), enable_events=True, key=OPENEXISTING,
                               target=EXISTINGPATH),
-                sg.Button("Setup New Build Files",
-                          tooltip="Sets up the project build directory by installing various Electron packages",
+                sg.Button(_("Setup New Build Files"),
+                          tooltip=_("Sets up the project build directory by installing various Electron packages"),
                           key=SETUPBUTTON),
-                sg.Button("Update Information", key=UPDATEBUTTON, disabled=True),
-                sg.Button("Build for " + self.system_type, disabled=True, key=BUILDBUTTON),
-                sg.Button("Build for Web", disabled=True, key=BUILDWEBBUTTON)]
+                sg.Button(_("Update Information"), key=UPDATEBUTTON, disabled=True),
+                sg.Button(_("Build for ") + self.system_type, disabled=True, key=BUILDBUTTON),
+                sg.Button(_("Build for Web"), disabled=True, key=BUILDWEBBUTTON)]
         ]
         tab2_layout = [
             [sg.Frame(layout=[
                 [sg.Text(
-                    "The Project Organiser parses a Twine Story HTML file for various media (images, audio, video),"
+                    _("The Project Organiser parses a Twine Story HTML file for various media (images, audio, video),"
                     "copies them and your HTML file to the selected output directory in a neat structure and attempts "
-                    "to replace the links in your Story with the new ones, so that the Story will behave correctly.",
+                    "to replace the links in your Story with the new ones, so that the Story will behave correctly."),
                     size=(int(text_field_size[0] * 1.3), None))],
-                [sg.Text("Twine HTML File", size=entry_size),
+                [sg.Text(_("Twine HTML File"), size=entry_size),
                  sg.InputText(key=TWINEHTML, size=text_field_size), sg.FileBrowse()],
-                [sg.Text("Output Directory", size=entry_size),
+                [sg.Text(_("Output Directory"), size=entry_size),
                  sg.InputText(key=ORGANISEDDIR, size=text_field_size), sg.FolderBrowse()],
-                [sg.Button("Organise", key=ORGANISE, enable_events=True)]
-            ], title="Project Organiser")]
+                [sg.Button(_("Organise"), key=ORGANISE, enable_events=True)]
+            ], title=_("Project Organiser"))]
         ]
         # Icon stuff
 
         tab3_layout = [
             [sg.Frame(layout=[
-                [sg.Text("This tool can be used to create icons (for anything). Select the image you wish to use,\n"
+                [sg.Text(_("This tool can be used to create icons (for anything). Select the image you wish to use,\n"
                          "and generate ICO (Windows icon format) and ICNS (macOS icon format) "
-                         "using those respective systems", size=(int(text_field_size[0] * 1.3), None))],
-                [sg.Text("Icon Location", size=entry_size),
+                         "using those respective systems"), size=(int(text_field_size[0] * 1.3), None))],
+                [sg.Text(_("Icon Location"), size=entry_size),
                  sg.InputText(EMPTY_STRING, key=ICONLOCATIONTEXT, enable_events=True),
                  sg.FileBrowse()],
-                [sg.Text("Icon Destination", size=entry_size),
+                [sg.Text(_("Icon Destination"), size=entry_size),
                  sg.InputText(EMPTY_STRING, key=ICONDESTINATIONTEXT, enable_events=True),
                  sg.FileSaveAs(file_types=(self.icon_type,))],
                 [sg.Frame(layout=[
-                    [sg.Image(size=(256, 256), key=ICONIMAGE, filename='', )]], title="Image Preview",
-                    size=(256, 256)), sg.Button("Convert", key=CONVERT)]
-            ], title="Icon Creator")]]
+                    [sg.Image(size=(256, 256), key=ICONIMAGE, filename='', )]], title=_("Image Preview"),
+                    size=(256, 256)), sg.Button(_("Convert"), key=CONVERT)]
+            ], title=_("Icon Creator"))]]
 
         tab4_layout = [
             [sg.Frame(
                 layout=[
-                    [sg.Text("NPM and NPX are required to use the executable generator.\n"
-                             "TweeGo is required to use the Project Organiser")],
-                    [sg.Text("NPM Location", size=entry_size),
+                    [sg.Text(_("NPM and NPX are required to use the executable generator.\n"
+                             "TweeGo is required to use the Project Organiser"))],
+                    [sg.Text(_("NPM Location"), size=entry_size),
                      sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="NPM_FIND")],
-                    [sg.Text("NPX Location", size=entry_size),
+                    [sg.Text(_("NPX Location"), size=entry_size),
                      sg.InputText(libs[NPX_LOCATION], key=NPX_LOCATION, size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="NPX_FIND")],
-                    [sg.Text("TweeGo Location", size=entry_size),
+                    [sg.Text(_("TweeGo Location"), size=entry_size),
                      sg.InputText(key=TWEEGO_LOCATION, default_text=libs[TWEEGO_LOCATION],
                                   size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="TWEEGO_FIND")]],
-                title="Libraries")]]
+                title=_("Libraries"))]]
 
-        layout = [[sg.TabGroup([[sg.Tab("Executable Generator", tab1_layout, tooltip="Executable Generator"),
-                                 sg.Tab("Project Organiser", tab2_layout, tooltip="Project Organiser"),
-                                 sg.Tab("IconCreator", tab3_layout, tooltip="IconCreator"),
-                                 sg.Tab("Library Info", tab4_layout, tooltip="Library Info")
+        layout = [[sg.TabGroup([[sg.Tab(_("Executable Generator"), tab1_layout, tooltip=_("Executable Generator")),
+                                 sg.Tab(_("Project Organiser"), tab2_layout, tooltip=_("Project Organiser")),
+                                 sg.Tab(_("IconCreator"), tab3_layout, tooltip=_("IconCreator")),
+                                 sg.Tab(_("Library Info"), tab4_layout, tooltip=_("Library Info"))
                                  ]])],
 
-                  [sg.Button("Open Twine2 Directory (Local)", key=TWINE2LOCAL), sg.Button("Help", key=HELP),
-                   sg.Button("About", key=ABOUT),
-                   sg.Button("Exit", key=EXIT)],
+                  [sg.Button(_("Open Twine2 Directory (Local)"), key=TWINE2LOCAL), sg.Button(_("Help"), key=HELP),
+                   sg.Button(_("About"), key=ABOUT),
+                   sg.Button(_("Exit"), key=EXIT)],
                   [sg.Multiline(EMPTY_STRING, size=(entry_size[0] * 4, entry_size[1] * 8), key=DIALOGUE_BOX_KEY,
                                 autoscroll=True, disabled=True)],
                   [sg.ProgressBar(100, size=(entry_size[0] * 2.8, entry_size[1] * 6), orientation="h",
                                   key=PROGRESSBAR)]
                   ]
 
-        window = sg.Window("Twine Executable Generation Tool", layout)
+        window = sg.Window(_("Twine Executable Generation Tool"), layout)
         self.dialogue_box = window.find_element(DIALOGUE_BOX_KEY)
 
         while True:
@@ -164,7 +164,7 @@ class Builder(core.Core):
             if event in (None, ABOUT):
                 sg.popup("About this program\n"
                          "Made by Locke Birdsey (@lockebirdsey)\n"
-                         "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title="About TwEGeT",)
+                         "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title=_("About TwEGeT"),)
             if event in (None, ICONLOCATIONTEXT):
                 try:
                     img_path = Path(values[ICONLOCATIONTEXT])
@@ -174,7 +174,7 @@ class Builder(core.Core):
                         window[ICONIMAGE].update(data=img_as_64, size=(256, 256))
                 except Exception as e:
                     print(e)
-                    self.logger.debug("Error with loading icon image")
+                    self.logger.debug(_("Error with loading icon image"))
             if event in (None, BUILDWEBBUTTON):
                 build_state = BuildState.BUILDING_WEB
             if event in (None, SETUPBUTTON):
@@ -201,14 +201,14 @@ class Builder(core.Core):
                         self.run_command_store_output([opener, str(twine_path)])
                 except Exception as e:
                     self.logger.debug(
-                        "An error occurred. If needed, submit the following error message to the TwET Github." + str(
+                        _("An error occurred. If needed, submit the following error message to the TwET Github.") + str(
                             e))
             if event in (None, UPDATEBUTTON):
                 self.update_dictionaries(values)
                 self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
                 self.replace_js_parameters(
                     Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR).joinpath(INDEX_JS))
-                self.logger.info("Updating project files located at " + self.project[PROJ_BUILD_DIR])
+                self.logger.info(_("Updating project files located at ") + self.project[PROJ_BUILD_DIR])
             if event in (None, EXISTINGPATH):
                 path = values[EXISTINGPATH]
                 try:
@@ -217,14 +217,14 @@ class Builder(core.Core):
                     self.activate_buttons(window)
                     sg.Popup("Successfully loaded project: " + self.project[PROJ_NAME])
                 except:
-                    sg.Popup("Existing project file could not be loaded.")
+                    sg.Popup(_("Existing project file could not be loaded."))
             if event in (None, HELP):
-                sg.popup(HELP_STRING, title="Help with TwEGeT")
+                sg.popup(HELP_STRING, title=_("Help with TwEGeT"))
             if event in (None, PROJ_PARENT_DIR):
                 potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
                 if potential_lock_path.exists():
                     sg.Popup(
-                        "A config file has been detected at " + str(potential_lock_path) + "\nWill load its contents")
+                        _("A config file has been detected at " + str(potential_lock_path) + "\nWill load its contents"))
                     self.load_lock_file(potential_lock_path)
                     # update widgets with new values
                     self.update_widgets(window)
@@ -232,11 +232,11 @@ class Builder(core.Core):
             if event in (None, BUILDBUTTON):
                 if self.libs[NPX_LOCATION] is EMPTY_STRING or self.libs[NPM_LOCATION] is EMPTY_STRING:
                     self.logger.info(
-                        "Either NPM or NPX are unable to be found which means the project cannot be built.\n"
-                        "Please locate them using the \"Library Info\" Tab")
+                        _("Either NPM or NPX are unable to be found which means the project cannot be built.\n"
+                        "Please locate them using the \"Library Info\" Tab"))
                 else:
                     build_state = BuildState.BUILDING_NEW
-                    self.logger.info("Building executable for " + self.system_type)
+                    self.logger.info(_("Building executable for ") + self.system_type)
                     self.create_lock_file(Path(self.project[PROJ_BUILD_DIR]))
                     self.update_package_json(Path(self.project[PROJ_BUILD_DIR]).joinpath(YARN_PACKAGE_FILE))
                     self.replace_js_parameters(
@@ -246,7 +246,7 @@ class Builder(core.Core):
                         icon_path = Path(self.project[PROJ_ICON_LOCATION])
                         icon_tool = IconTool(icon_path)
                         icon_tool.convert(Path(self.project[PROJ_BUILD_DIR]), target_system=self.system_type)
-                        self.logger.info("Creating " + self.system_type + " compatible icons")
+                        self.logger.info(_("Creating ") + self.system_type + _(" compatible icons"))
                     self.run_command_with_output([self.libs[NPM_LOCATION] + self.cmd_extension, "run", "make"],
                                                  cwd=self.project[PROJ_BUILD_DIR])
             # The buildstates
@@ -263,7 +263,7 @@ class Builder(core.Core):
                 zip_path = Path(self.project[PROJ_BUILD_DIR]).joinpath(self.project[PROJ_NAME])
                 shutil.make_archive(zip_path, "zip", (Path(self.project[PROJ_BUILD_DIR]).joinpath(ELECTRON_SOURCE_DIR)))
                 # TODO thread this command so for very large zip files we can update the progress bar
-                self.logger.info("Zip file located at " + str(zip_path) + ".zip")
+                self.logger.info(_("Zip file located at " + str(zip_path) + ".zip"))
                 build_state = BuildState.NOTHING
             elif build_state == BuildState.UPDATING:
                 pass
@@ -289,7 +289,7 @@ class Builder(core.Core):
 
     def build_directories(self, root):
         # lets make a file in root that has
-        self.logger.info("Building lock file at " + str(Path(root).joinpath(DETAILS_FILE_NAME)))
+        self.logger.info(_("Building lock file at ") + str(Path(root).joinpath(DETAILS_FILE_NAME)))
         self.create_lock_file(root)
         src_dir = root.joinpath(ELECTRON_SOURCE_DIR)
         self.copy_files(src_dir)
@@ -299,17 +299,17 @@ class Builder(core.Core):
         pd_path = Path(self.project[PROJ_DIR])
         html_path = Path(self.project[PROJ_HTML])
         self.logger.info(
-            "Copying the source files over from " + str(pd_path) + " to " + str(root.joinpath(pd_path.name)))
+            _("Copying the source files over from ") + str(pd_path) + _(" to ") + str(root.joinpath(pd_path.name)))
         shutil.copytree(pd_path, root.joinpath(pd_path.name))
         # copy and rename the main html file
         self.logger.info(
-            "Copying the main HTML file over from " + str(html_path) + " to " + str(root.joinpath("index.html")))
+            _("Copying the main HTML file over from ") + str(html_path) + _(" to ") + str(root.joinpath("index.html")))
         shutil.copy(html_path, root.joinpath("index.html"))
 
     def build_new(self):
         pod_path = Path(self.project[PROJ_PARENT_DIR])
         project_dir = pod_path.joinpath(self.project[PROJ_NAME])
-        self.logger.info("Building project into " + str(project_dir))
+        self.logger.info(_("Building project into ") + str(project_dir))
         if project_dir.is_dir():
             # Warn the user that the directory exists and no project was detected
             sg.Popup("A directory already exists here and cannot be used.\nPlease select a different directory")
