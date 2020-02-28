@@ -12,6 +12,7 @@ import re
 
 from twine_media_organiser import TMO
 from i18n import _
+import gettext
 
 
 class Builder(core.Core):
@@ -78,8 +79,8 @@ class Builder(core.Core):
             [sg.Frame(layout=[
                 [sg.Text(
                     _("The Project Organiser parses a Twine Story HTML file for various media (images, audio, video),"
-                    "copies them and your HTML file to the selected output directory in a neat structure and attempts "
-                    "to replace the links in your Story with the new ones, so that the Story will behave correctly."),
+                      "copies them and your HTML file to the selected output directory in a neat structure and attempts "
+                      "to replace the links in your Story with the new ones, so that the Story will behave correctly."),
                     size=(int(text_field_size[0] * 1.3), None))],
                 [sg.Text(_("Twine HTML File"), size=entry_size),
                  sg.InputText(key=TWINEHTML, size=text_field_size), sg.FileBrowse()],
@@ -93,8 +94,8 @@ class Builder(core.Core):
         tab3_layout = [
             [sg.Frame(layout=[
                 [sg.Text(_("This tool can be used to create icons (for anything). Select the image you wish to use,\n"
-                         "and generate ICO (Windows icon format) and ICNS (macOS icon format) "
-                         "using those respective systems"), size=(int(text_field_size[0] * 1.3), None))],
+                           "and generate ICO (Windows icon format) and ICNS (macOS icon format) "
+                           "using those respective systems"), size=(int(text_field_size[0] * 1.3), None))],
                 [sg.Text(_("Icon Location"), size=entry_size),
                  sg.InputText(EMPTY_STRING, key=ICONLOCATIONTEXT, enable_events=True),
                  sg.FileBrowse()],
@@ -110,7 +111,7 @@ class Builder(core.Core):
             [sg.Frame(
                 layout=[
                     [sg.Text(_("NPM and NPX are required to use the executable generator.\n"
-                             "TweeGo is required to use the Project Organiser"))],
+                               "TweeGo is required to use the Project Organiser"))],
                     [sg.Text(_("NPM Location"), size=entry_size),
                      sg.InputText(libs[NPM_LOCATION], key=NPM_LOCATION, size=text_field_size, enable_events=True),
                      sg.FileBrowse(enable_events=True, key="NPM_FIND")],
@@ -164,7 +165,7 @@ class Builder(core.Core):
             if event in (None, ABOUT):
                 sg.popup("About this program\n"
                          "Made by Locke Birdsey (@lockebirdsey)\n"
-                         "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title=_("About TwEGeT"),)
+                         "Submit bugs at https://github.com/LockeBirdsey/TwEGeT/issues", title=_("About TwEGeT"), )
             if event in (None, ICONLOCATIONTEXT):
                 try:
                     img_path = Path(values[ICONLOCATIONTEXT])
@@ -224,7 +225,8 @@ class Builder(core.Core):
                 potential_lock_path = Path(self.project[PROJ_PARENT_DIR]).joinpath(DETAILS_FILE_NAME)
                 if potential_lock_path.exists():
                     sg.Popup(
-                        _("A config file has been detected at " + str(potential_lock_path) + "\nWill load its contents"))
+                        _("A config file has been detected at " + str(
+                            potential_lock_path) + "\nWill load its contents"))
                     self.load_lock_file(potential_lock_path)
                     # update widgets with new values
                     self.update_widgets(window)
@@ -233,7 +235,7 @@ class Builder(core.Core):
                 if self.libs[NPX_LOCATION] is EMPTY_STRING or self.libs[NPM_LOCATION] is EMPTY_STRING:
                     self.logger.info(
                         _("Either NPM or NPX are unable to be found which means the project cannot be built.\n"
-                        "Please locate them using the \"Library Info\" Tab"))
+                          "Please locate them using the \"Library Info\" Tab"))
                 else:
                     build_state = BuildState.BUILDING_NEW
                     self.logger.info(_("Building executable for ") + self.system_type)

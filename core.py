@@ -1,7 +1,7 @@
 import json
 import logging
 import multiprocessing
-
+multiprocessing.freeze_support()
 from pathlib import Path
 
 from settings_manager import SettingsManager
@@ -18,7 +18,7 @@ from constants import *
 
 import zipimport
 
-multiprocessing.freeze_support()
+
 
 
 ##

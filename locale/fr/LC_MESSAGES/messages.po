@@ -20,7 +20,7 @@ msgstr ""
 
 #: builder.py:27
 msgid "Locating dependencies..."
-msgstr ""
+msgstr "Localisation des dépendances..."
 
 #: builder.py:29
 msgid "Locating and importing exising settings..."

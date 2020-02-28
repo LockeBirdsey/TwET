@@ -3,7 +3,8 @@
 block_cipher = None
 
 added_files = [
-( './templates', './templates')
+( './templates', './templates'),
+('./locale','./locale')
 
 ]
 a = Analysis(['builder.py'],
