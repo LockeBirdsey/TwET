@@ -2,12 +2,10 @@ import json
 import logging
 import multiprocessing
 
-# To make pyinstaller behave
 from pathlib import Path
 
 from settings_manager import SettingsManager
 
-multiprocessing.freeze_support()
 import subprocess
 import platform
 import sys
@@ -19,6 +17,8 @@ from threading import Thread
 from constants import *
 
 import zipimport
+
+multiprocessing.freeze_support()
 
 
 ##
@@ -36,30 +36,21 @@ class QueueHandler(logging.Handler):
         self.log_queue.put(record)
 
 
+def resource_path(relative_path):
+    try:
+        base_path = Path(sys._MEIPASS)
+    except Exception:
+        base_path = Path(".")
+
+    return base_path.joinpath(Path(relative_path))
+
+
 class Core:
     log_queue = None
     logger = None
     queue_handler = None
     settings_manager = None
-
-    def __init__(self):
-        # Set up all the logging
-        self.logger = logging.getLogger('TweGeT')
-        logging.basicConfig(level=logging.DEBUG,
-                            format=u'%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-        handler = logging.StreamHandler(sys.stderr)
-        handler.setLevel(logging.CRITICAL)
-        formatter = logging.Formatter(u'%(asctime)s - %(levelname)s - %(message)s',
-                                      datefmt='%Y-%m-%d %H:%M:%S')
-        fhandler = logging.FileHandler("twet.log", 'w', 'utf-8')
-        fhandler.setFormatter(formatter)
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-        self.logger.addHandler(fhandler)
-        self.log_queue = Queue()
-        self.queue_handler = QueueHandler(self.log_queue)
-        self.logger.addHandler(self.queue_handler)
-        self.settings_manager = SettingsManager()
+    icon_type = ("Icon files", "*.ico")
 
     ON_POSIX = 'posix' in sys.builtin_module_names
 
@@ -94,8 +85,11 @@ class Core:
         AUTHOR_REPO: "",
     }
 
+    # I cannot find a nicer way of doing this without installing additional packages
+    processes = []
+
     entry_size = (20, 1)
-    # The central YATE class
+
     system_type = platform.system()
 
     # System dependent variables
@@ -106,13 +100,30 @@ class Core:
     cmd_extension = ""
     WINDOWS_CMD_EXT = ".cmd"
 
-    # I cannot find a nicer way of doing this without installing additional packages
-    processes = []
-
-    if system_type == "Windows":
-        which_command = "where"
-        shell = True
-        cmd_extension = WINDOWS_CMD_EXT
+    def __init__(self):
+        # Set up all the logging
+        self.logger = logging.getLogger('TweGeT')
+        logging.basicConfig(level=logging.DEBUG,
+                            format=u'%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        handler = logging.StreamHandler(sys.stderr)
+        handler.setLevel(logging.CRITICAL)
+        formatter = logging.Formatter(u'%(asctime)s - %(levelname)s - %(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
+        fhandler = logging.FileHandler("twet.log", 'w', 'utf-8')
+        fhandler.setFormatter(formatter)
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+        self.logger.addHandler(fhandler)
+        self.log_queue = Queue()
+        self.queue_handler = QueueHandler(self.log_queue)
+        self.logger.addHandler(self.queue_handler)
+        self.settings_manager = SettingsManager()
+        if self.system_type == WINDOWS:
+            self.which_command = "where"
+            self.shell = True
+            self.cmd_extension = self.WINDOWS_CMD_EXT
+        if self.system_type == DARWIN:
+            self.icon_type = ("Iconset", "*.icns")
 
     def enqueue_output(self, out, queue):
         for line in iter(out.readline, b''):
@@ -225,7 +236,7 @@ class Core:
 
     def replace_js_parameters(self, path):
         js = None
-        with open(self.resource_path(INDEX_JS_TEMPLATE_PATH), 'r') as f:
+        with open(resource_path(INDEX_JS_TEMPLATE_PATH), 'r') as f:
             js = f.read()
         js = js.replace(JS_HEIGHT_KEY, self.project[PROJ_DIMS_HEIGHT]).replace(JS_WIDTH_KEY,
                                                                                self.project[PROJ_DIMS_WIDTH])
@@ -246,11 +257,3 @@ class Core:
             self.libs[NPX_LOCATION] = x
         if self.libs[TWEEGO_LOCATION] == "":
             self.libs[TWEEGO_LOCATION] = t
-
-    def resource_path(self, relative_path):
-        try:
-            base_path = Path(sys._MEIPASS)
-        except Exception:
-            base_path = Path(".")
-
-        return base_path.joinpath(Path(relative_path))
