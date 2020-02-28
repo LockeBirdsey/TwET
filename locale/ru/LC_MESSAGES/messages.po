@@ -21,101 +21,103 @@ msgstr ""
 
 #: builder.py:27
 msgid "Locating dependencies..."
-msgstr ""
+msgstr "Поиск зависимостей ..."
 
 #: builder.py:29
 msgid "Locating and importing exising settings..."
-msgstr ""
+msgstr "Поиск и импорт существующих настроек ..."
 
 #: builder.py:38
 msgid "Project Name"
-msgstr ""
+msgstr "название проекта"
 
 #: builder.py:40
 msgid "Author Name"
-msgstr ""
+msgstr "Имя автора"
 
 #: builder.py:41
 msgid "Your Name"
-msgstr ""
+msgstr "Ваше имя"
 
 #: builder.py:42
 msgid "Version"
-msgstr ""
+msgstr "Версия"
 
 #: builder.py:44
 msgid "Project Directory"
-msgstr ""
+msgstr "Каталог проектов"
 
 #: builder.py:46
 msgid "Project HTML File"
-msgstr ""
+msgstr "HTML-файл проекта"
 
 #: builder.py:48
 msgid "Project Output Directory"
-msgstr ""
+msgstr "Каталог выходных данных проекта"
 
 #: builder.py:49
 msgid "Where you want the executable to be stored"
-msgstr ""
+msgstr "Где вы хотите сохранить исполняемый файл"
 
 #: builder.py:52
 msgid "Project Details"
-msgstr ""
+msgstr "Подробности проекта"
 
 #: builder.py:54
 msgid "Email"
-msgstr ""
+msgstr "Эл. адрес"
 
 #: builder.py:55
 msgid "Repository"
-msgstr ""
+msgstr "хранилище"
 
 #: builder.py:56
 msgid "Window Width"
-msgstr ""
+msgstr "Ширина окна"
 
 #: builder.py:58
 msgid "Window Height"
-msgstr ""
+msgstr "Высота окна"
 
 #: builder.py:62 builder.py:98
 msgid "Icon Location"
-msgstr ""
+msgstr "Расположение значка"
 
 #: builder.py:63
 msgid "Automatically create an icon and assign it to the executable"
-msgstr ""
+msgstr "Автоматически создать иконку и назначить ее исполняемому файлу"
 
 #: builder.py:66
 msgid "Author Details"
-msgstr ""
+msgstr "Сведения об авторе"
 
 #: builder.py:68
 msgid "Open Existing Project"
-msgstr ""
+msgstr "Открыть существующий проект"
 
 #: builder.py:70
 msgid "Setup New Build Files"
-msgstr ""
+msgstr "Установить новые файлы сборки"
 
 #: builder.py:71
 msgid ""
 "Sets up the project build directory by installing various Electron "
 "packages"
 msgstr ""
+"Устанавливает каталог сборки проекта путем установки различных Electron "
+"пакеты"
 
 #: builder.py:73
 msgid "Update Information"
-msgstr ""
+msgstr "Обновить информацию"
 
 #: builder.py:74
 msgid "Build for "
-msgstr ""
+msgstr "Построить для "
 
 #: builder.py:75
 msgid "Build for Web"
-msgstr ""
+msgstr "Сборка для веба"
 
 #: builder.py:80
 msgid ""
@@ -124,22 +126,26 @@ msgid ""
 "output directory in a neat structure and attempts to replace the links in"
 " your Story with the new ones, so that the Story will behave correctly."
 msgstr ""
+"Организатор проекта анализирует HTML-файл Twine Story для различных носителей"
+"(изображения, аудио, видео), копирует их и ваш HTML-файл в выбранное"
+msgstr "каталог вывода в аккуратной структуре и попытки заменить ссылки в"
+"Ваша история с новыми, так что история будет вести себя правильно."
 
 #: builder.py:84
 msgid "Twine HTML File"
-msgstr ""
+msgstr "Twine HTML-файл"
 
 #: builder.py:86
 msgid "Output Directory"
-msgstr ""
+msgstr "Выходной каталог"
 
 #: builder.py:88
 msgid "Organise"
-msgstr ""
+msgstr "организовать"
 
 #: builder.py:89 builder.py:127
 msgid "Project Organiser"
-msgstr ""
+msgstr "Организатор проекта"
 
 #: builder.py:95
 msgid ""
@@ -148,108 +154,117 @@ msgid ""
 "and generate ICO (Windows icon format) and ICNS (macOS icon format) using"
 " those respective systems"
 msgstr ""
+"Этот инструмент можно использовать для создания иконок (для чего угодно). Выберите изображение"
+"вы хотите использовать, \ n"
+"и генерировать ICO (формат значков Windows) и ICNS (формат значков macOS) с использованием этих соответствующих систем"
 
 #: builder.py:101
 msgid "Icon Destination"
-msgstr ""
+msgstr "Значок Назначение"
 
 #: builder.py:105
 msgid "Image Preview"
-msgstr ""
+msgstr "Предварительный просмотр изображения"
 
 #: builder.py:106
 msgid "Convert"
-msgstr ""
+msgstr "Конвертировать"
 
 #: builder.py:107
 msgid "Icon Creator"
-msgstr ""
+msgstr "Создатель Иконок"
 
 #: builder.py:112
 msgid ""
 "NPM and NPX are required to use the executable generator.\n"
 "TweeGo is required to use the Project Organiser"
 msgstr ""
+"NPM и NPX обязаны использовать исполняемый генератор.\n"
+"TweeGo необходимо использовать Организатор проекта""
 
 #: builder.py:114
 msgid "NPM Location"
-msgstr ""
+msgstr "Расположение NPM"
 
 #: builder.py:117
 msgid "NPX Location"
-msgstr ""
+msgstr "Расположение NPX"
 
 #: builder.py:120
 msgid "TweeGo Location"
-msgstr ""
+msgstr "Расположение TweeGo"
 
 #: builder.py:124
 msgid "Libraries"
-msgstr ""
+msgstr "Библиотеки"
 
 #: builder.py:126
 msgid "Executable Generator"
-msgstr ""
+msgstr "Исполняемый генератор"
 
 #: builder.py:128
 msgid "IconCreator"
-msgstr ""
+msgstr "Создатель Иконок"
 
 #: builder.py:129
 msgid "Library Info"
-msgstr ""
+msgstr "Информация библиотеки"
 
 #: builder.py:132
 msgid "Open Twine2 Directory (Local)"
-msgstr ""
+msgstr "Откройте каталог Twine2 (локальный)"
 
 #: builder.py:132
 msgid "Help"
-msgstr ""
+msgstr "Помогите"
 
 #: builder.py:133
 msgid "About"
-msgstr ""
+msgstr "Около"
 
 #: builder.py:134
 msgid "Exit"
-msgstr ""
+msgstr "покидать"
 
 #: builder.py:141
 msgid "Twine Executable Generation Tool"
-msgstr ""
+msgstr "Twine исполняемый инструмент генерации"
 
 #: builder.py:167
 msgid "About TwEGeT"
-msgstr ""
+msgstr "O TwEGeT"
 
 #: builder.py:177
 msgid "Error with loading icon image"
-msgstr ""
+msgstr "Ошибка при загрузке изображения значка"
 
 #: builder.py:204
 msgid ""
 "An error occurred. If needed, submit the following error message to the "
 "TwET Github."
 msgstr ""
+"Произошла ошибка. При необходимости отправьте следующее сообщение об ошибке в"
+"Твит Github."
 
 #: builder.py:211
 msgid "Updating project files located at "
-msgstr ""
+msgstr "Обновление файлов проекта, расположенных на"
 
 #: builder.py:220
 msgid "Existing project file could not be loaded."
-msgstr ""
+msgstr "Не удалось загрузить существующий файл проекта."
 
 #: builder.py:222
 msgid "Help with TwEGeT"
-msgstr ""
+msgstr "Помогите с TwET"
 
 #: builder.py:227
 msgid ""
 "A config file has been detected at \n"
 "Will load its contents"
 msgstr ""
+"Конфигурационный файл был обнаружен в \ n"
+"Загрузит его содержимое"
 
 #: builder.py:235
 msgid ""
@@ -257,40 +272,43 @@ msgid ""
 "be built.\n"
 "Please locate them using the \"Library Info\" Tab"
 msgstr ""
+"Либо NPM, либо NPX не могут быть найдены, что означает, что проект не может"
+"быть построенным. \ n"
+"Пожалуйста, найдите их, используя вкладку« Информация о библиотеке "
 
 #: builder.py:239
 msgid "Building executable for "
-msgstr ""
+msgstr "Сборка исполняемого файла для "
 
 #: builder.py:249
 msgid "Creating "
-msgstr ""
+msgstr "Создание "
 
 #: builder.py:249
 msgid " compatible icons"
-msgstr ""
+msgstr "совместимые значки"
 
 #: builder.py:266
 msgid "Zip file located at .zip"
-msgstr ""
+msgstr "Zip-файл находится по адресу .zip"
 
 #: builder.py:292
 msgid "Building lock file at "
-msgstr ""
+msgstr "Создание файла блокировки на"
 
 #: builder.py:302
 msgid "Copying the source files over from "
-msgstr ""
+msgstr "Копирование исходных файлов из"
 
 #: builder.py:302 builder.py:306
 msgid " to "
-msgstr ""
+msgstr " в "
 
 #: builder.py:306
 msgid "Copying the main HTML file over from "
-msgstr ""
+msgstr "Копирование основного файла HTML из "
 
 #: builder.py:312
 msgid "Building project into "
-msgstr ""
+msgstr "Строительство проекта в "
 
